@@ -1,0 +1,5 @@
+CREATE TABLE  IF NOT EXISTS game.p_results(
+  id SERIAL PRIMARY KEY,
+  start_date TIMESTAMP NOT NULL,
+  end_date TIMESTAMP NOT NULL
+);
