@@ -23,16 +23,12 @@ public class UserService {
         // Iterate over the rows
         while (resultSet.next()) {
             User user = new User();
-            user.setId(resultSet.getInt("id"));
+            user.setId(resultSet.getLong("id"));
             user.setUsername(resultSet.getString("username"));
             user.setEmail(resultSet.getString("email"));
             user.setPassword(resultSet.getString("password"));
             user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
             user.setNumOfWins(resultSet.getInt("number_of_wins"));
-            
-//            System.out.printf("%-5d %-10s %-10s %-10s %-10d %-5d %n",
-//                    user.getId(), user.getUsername(), user.getEmail(), user.getPassword(),
-//                    user.getNumOfPlayedGames(), user.getNumOfWins());
             
             users.add(user);
         }
@@ -43,15 +39,15 @@ public class UserService {
     }
     
     public User getUser(String username, String email) throws SQLException {
-        PreparedStatement getUsers = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND email = ?");
-        getUsers.setString(1, username);
-        getUsers.setString(2, email);
+        PreparedStatement getUser = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND email = ?");
+        getUser.setString(1, username);
+        getUser.setString(2, email);
         
-        ResultSet resultSet = getUsers.executeQuery();
+        ResultSet resultSet = getUser.executeQuery();
         
         resultSet.next(); // move to the returned row
         User user = new User();
-        user.setId(resultSet.getInt("id"));
+        user.setId(resultSet.getLong("id"));
         user.setUsername(resultSet.getString("username"));
         user.setEmail(resultSet.getString("email"));
         user.setPassword(resultSet.getString("password"));
@@ -63,8 +59,31 @@ public class UserService {
         }
         
         resultSet.close();
-        getUsers.close();
+        getUser.close();
         return user;
     }
+    
+    /**
+     * <B>important</B> - you can provide a user with any id but the id will be assigned automatically by database.
+     * @param user
+     * @throws SQLException
+     */
+    public void addUser(User user) throws SQLException {
+        PreparedStatement addUser = connection.prepareStatement(
+                "INSERT INTO p_user (username, email, password, number_of_played_games, number_of_wins) " +
+                    "VALUES (?, ?, ?, ?, ?)"
+        );
+
+        addUser.setString(1, user.getUsername());
+        addUser.setString(2, user.getEmail());
+        addUser.setString(3, user.getPassword());
+        addUser.setInt(4, user.getNumOfPlayedGames());
+        addUser.setInt(5, user.getNumOfWins());
+        
+        addUser.executeUpdate();
+        System.out.printf("add user: %s \n", user);
+    }
+    
+    //todo: check for email uniqueness
     
 }
