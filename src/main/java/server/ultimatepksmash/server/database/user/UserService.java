@@ -1,7 +1,6 @@
 package server.ultimatepksmash.server.database.user;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import server.ultimatepksmash.server.database.DataBaseService;
 
 import java.sql.Connection;

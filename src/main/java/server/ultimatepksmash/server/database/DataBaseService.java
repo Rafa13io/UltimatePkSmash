@@ -2,10 +2,11 @@ package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
 import server.ultimatepksmash.server.database.samsher.SmasherService;
-import server.ultimatepksmash.server.database.user.User;
-import server.ultimatepksmash.server.database.user.UserService;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 
 @AllArgsConstructor
