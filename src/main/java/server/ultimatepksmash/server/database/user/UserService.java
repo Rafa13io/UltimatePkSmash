@@ -1,7 +1,7 @@
 package server.ultimatepksmash.server.database.user;
 
 import lombok.AllArgsConstructor;
-import server.ultimatepksmash.server.database.DataBaseConnection;
+import server.ultimatepksmash.server.database.DataBaseService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class UserService {
-    private final Connection connection = DataBaseConnection.connection;
+    private final Connection connection = DataBaseService.connection;
     
     public List<User> getUsers() throws SQLException {
         PreparedStatement getUsers = connection.prepareStatement("SELECT * FROM p_user");

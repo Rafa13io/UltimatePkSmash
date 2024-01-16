@@ -2,29 +2,28 @@ package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 
 @AllArgsConstructor
-public class DataBaseConnection {
+public class DataBaseService {
     
     public static Connection connection;
     
     public static void connectToDatabase() throws SQLException {
-        
-        String url = "jdbc:postgresql://localhost:5432/ultimatepksmashers";
+        String dbName = "ultimatepksmashers";
+        String url = "jdbc:postgresql://localhost:5432/postgres";
         connection = DriverManager.getConnection(url, "postgres", "postgres");
         try {
-            PreparedStatement statement = connection.prepareStatement("CREATE DATABASE ultimatepksmashers");
+            PreparedStatement statement = connection.prepareStatement("CREATE DATABASE " + dbName);
             statement.executeUpdate();
-            System.out.println("created database schema: " + connection.getSchema());
+            System.out.println("created database " + dbName + " schema: " + connection.getSchema());
         }
         catch (Exception e) {
+            // if already exists: make connection
+            url = "jdbc:postgresql://localhost:5432/" + dbName;
             connection = DriverManager.getConnection(url, "postgres", "postgres");
-            System.out.println("connected to database schema: " + connection.getSchema());
+            System.out.println("connected to database " + dbName + " schema: " + connection.getSchema());
         }
     }
 
