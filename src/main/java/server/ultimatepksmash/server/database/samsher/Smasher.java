@@ -12,6 +12,6 @@ public class Smasher {
     private Long id;
     private String name;
     private String description;
-    private String healthPoints;
+    private Double healthPoints;
     private String photoPath;
 }

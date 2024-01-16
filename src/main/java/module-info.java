@@ -14,4 +14,8 @@ module cllient.ultimatepksmash {
     
     opens cllient.ultimatepksmash to javafx.fxml;
     exports cllient.ultimatepksmash;
+    opens cllient.ultimatepksmash.gui.login to javafx.fxml;
+    exports cllient.ultimatepksmash.gui.login;
+    opens cllient.ultimatepksmash.gui.arena to javafx.fxml;
+    exports cllient.ultimatepksmash.gui.arena;
 }
