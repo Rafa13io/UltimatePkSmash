@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.database.user;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import server.ultimatepksmash.server.database.DataBaseService;
 
 import java.sql.Connection;
@@ -24,12 +25,7 @@ public class UserService {
         // Iterate over the rows
         while (resultSet.next()) {
             User user = new User();
-            user.setId(resultSet.getLong("id"));
-            user.setUsername(resultSet.getString("username"));
-            user.setEmail(resultSet.getString("email"));
-            user.setPassword(resultSet.getString("password"));
-            user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
-            user.setNumOfWins(resultSet.getInt("number_of_wins"));
+            mapUser(user, resultSet);
             
             users.add(user);
         }
@@ -48,12 +44,7 @@ public class UserService {
         
         resultSet.next(); // move to the returned row
         User user = new User();
-        user.setId(resultSet.getLong("id"));
-        user.setUsername(resultSet.getString("username"));
-        user.setEmail(resultSet.getString("email"));
-        user.setPassword(resultSet.getString("password"));
-        user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
-        user.setNumOfWins(resultSet.getInt("number_of_wins"));
+        mapUser(user, resultSet);
         
         if (resultSet.next()) {
             throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
@@ -62,6 +53,15 @@ public class UserService {
         resultSet.close();
         getUser.close();
         return user;
+    }
+    
+    private static void mapUser(User user, ResultSet resultSet) throws SQLException {
+        user.setId(resultSet.getLong("id"));
+        user.setUsername(resultSet.getString("username"));
+        user.setEmail(resultSet.getString("email"));
+        user.setPassword(resultSet.getString("password"));
+        user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
+        user.setNumOfWins(resultSet.getInt("number_of_wins"));
     }
     
     /**
@@ -89,8 +89,15 @@ public class UserService {
         
         addUser.executeUpdate();
         System.out.println("added user: " + user);
+        addUser.close();
     }
     
-    //todo: check for email uniqueness
-    
+    public void addSmasherToUser(Long userId, Long smasherId) throws SQLException {
+        String sql = "insert into p_smasher_user(user_id, smasher_id) values (?,?);";
+        PreparedStatement addSmasherToUser = connection.prepareStatement(sql);
+        addSmasherToUser.setLong(1, userId);
+        addSmasherToUser.setLong(1, smasherId);
+        addSmasherToUser.executeUpdate();
+        addSmasherToUser.close();
+    }
 }

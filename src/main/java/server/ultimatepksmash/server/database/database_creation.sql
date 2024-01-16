@@ -47,14 +47,12 @@ CREATE TABLE IF NOT EXISTS p_defence_skill
 
 CREATE TABLE IF NOT EXISTS p_smasher_user
 (
-    id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     smasher_id INT NOT NULL,
-    experience_points INT, --?
+    PRIMARY KEY (user_id, smasher_id),
     FOREIGN KEY (user_id) REFERENCES p_user(id),
     FOREIGN KEY (smasher_id) REFERENCES p_smasher(id)
 );
-
 
 
 CREATE TABLE IF NOT EXISTS p_result_1vs1 (

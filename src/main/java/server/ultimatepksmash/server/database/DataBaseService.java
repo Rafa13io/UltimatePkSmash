@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.samsher.SmasherService;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.database.user.UserService;
 
@@ -35,11 +36,14 @@ public class DataBaseService {
         System.out.println("connection closed");
     }
     
+    // testing
     public static void main(String[] args) throws SQLException {
         connectToDatabase();
-        UserService userService = new UserService();
-        userService.addUser(new User("nigger","afboboa","123"));
-        
+        SmasherService smasherService = new SmasherService();
+        for (var smasher : smasherService.getUserSmashers(1L)) {
+            System.out.println(smasher);
+        }
+
         closeConnection();
     }
 }
