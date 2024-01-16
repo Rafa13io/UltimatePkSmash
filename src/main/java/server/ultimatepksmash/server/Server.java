@@ -39,11 +39,11 @@ public class Server {
 //        return futureTask;
     }
     private ServerSocket mainSocket;
-    public Server(int port) throws IOException, ClassNotFoundException {
+    public Server(int port) throws Exception {
         serverSocket = new ServerSocket(port);//port 25800
         run();
     }
-    private void run() throws IOException, ClassNotFoundException {
+    private void run() throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(100);
         while(true)
         {
@@ -62,8 +62,9 @@ public class Server {
                     User user;
                     user = userService.getUser(logInReq.getUserName(), logInReq.getUserPassword());
                     output.writeObject(new LogInResp(true, user));
-                    FutureTask<SessionEndStatus> futureTask =new FutureTask<SessionEndStatus>(new UserSession(socket));
-                    executorService.execute(futureTask);
+                    //output.flush();
+                    FutureTask<SessionEndStatus> futureTask =new FutureTask<SessionEndStatus>(new UserSession(socket, user, output, input));
+                    executorService.submit(futureTask);
                     writeLock.lock();
                     sessionList.add(futureTask);
                     writeLock.unlock();
@@ -73,6 +74,7 @@ public class Server {
                     output.writeObject(new LogInResp(false, null));
                     System.out.println("Problem with executing sql statement");
                     socket.close();
+                    throw new Exception(e);
                 }
             }
             else if(obj instanceof RegisterReq)
@@ -92,9 +94,9 @@ public class Server {
                 }
 
             }
-            executorService.shutdown();
-        }
 
+        }
+        //executorService.shutdown();
     }
 
 }

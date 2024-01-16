@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.samsher.SmasherService;
 import server.ultimatepksmash.server.database.user.UserService;
 
 import java.sql.Connection;
@@ -19,7 +20,7 @@ public class DataBaseService {
     public static void connectToDatabase() throws SQLException {
         String dbName = "ultimatepksmashers";
         String url = "jdbc:postgresql://localhost:5432/postgres";
-        connection = DriverManager.getConnection(url, "postgres", "postgres");
+
         try {
             connection = DriverManager.getConnection(url, "postgres", "postgres");
             PreparedStatement statement = connection.prepareStatement("CREATE DATABASE " + dbName);

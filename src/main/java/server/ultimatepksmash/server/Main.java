@@ -7,7 +7,7 @@ import static server.ultimatepksmash.server.database.DataBaseService.closeConnec
 import static server.ultimatepksmash.server.database.DataBaseService.connectToDatabase;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws Exception {
         try {
             connectToDatabase();
             Server server = new Server(25800);

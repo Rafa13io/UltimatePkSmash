@@ -1,4 +1,4 @@
-package server.ultimatepksmash.server.messages.gamesmanager;
+package server.ultimatepksmash.server.gamesmanager;
 
 import server.ultimatepksmash.server.database.user.User;
 
