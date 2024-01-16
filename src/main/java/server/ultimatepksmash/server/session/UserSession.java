@@ -13,6 +13,7 @@ public class UserSession implements Callable<SessionEndStatus> {
     @Override
     public SessionEndStatus call() throws Exception {
         socket.close();
+        System.out.println("Call in UserSession not implemented yet");
         throw new  UnsupportedOperationException("Not implemented yet");
         //TODO: Implement this method
         //return new SessionEndStatus(SessionEndReason.unexpectedEndOfSession);

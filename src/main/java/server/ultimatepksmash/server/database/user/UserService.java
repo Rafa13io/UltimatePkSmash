@@ -34,26 +34,26 @@ public class UserService {
         return users;
     }
     
-    public User getUser(String username, String email) throws SQLException {
-        PreparedStatement getUser = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND email = ?");
+    public User getUser(String username, String password) throws SQLException {
+        PreparedStatement getUser = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND password = ?");
         getUser.setString(1, username);
-        getUser.setString(2, email);
+        getUser.setString(2, password);
         
         ResultSet resultSet = getUser.executeQuery();
         
         resultSet.next(); // move to the returned row
         User user = new User();
         mapUser(user, resultSet);
-        
+
         if (resultSet.next()) {
             throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
         }
-        
+
         resultSet.close();
         getUser.close();
         return user;
     }
-    
+
     private static void mapUser(User user, ResultSet resultSet) throws SQLException {
         user.setId(resultSet.getLong("id"));
         user.setUsername(resultSet.getString("username"));
@@ -74,7 +74,7 @@ public class UserService {
         if(usernames.contains(user.getUsername())) {
             throw new RuntimeException("username not available");
         }
-        
+
         PreparedStatement addUser = connection.prepareStatement(
                 "INSERT INTO p_user (username, email, password, number_of_played_games, number_of_wins) " +
                     "VALUES (?, ?, ?, ?, ?)"
@@ -85,7 +85,7 @@ public class UserService {
         addUser.setString(3, user.getPassword());
         addUser.setInt(4, user.getNumOfPlayedGames());
         addUser.setInt(5, user.getNumOfWins());
-        
+
         addUser.executeUpdate();
         System.out.println("added user: " + user);
         addUser.close();
