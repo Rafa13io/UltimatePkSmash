@@ -10,7 +10,8 @@ module cllient.ultimatepksmash {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
     requires java.sql;
-
+    requires lombok;
+    
     opens cllient.ultimatepksmash to javafx.fxml;
     exports cllient.ultimatepksmash;
 }
