@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
@@ -69,6 +70,12 @@ public class UserService {
      * @throws SQLException
      */
     public void addUser(User user) throws SQLException {
+        List<String> usernames;
+        usernames = getUsers().stream().map(User::getUsername).collect(Collectors.toList());
+        if(usernames.contains(user.getUsername())) {
+            throw new RuntimeException("username not available");
+        }
+        
         PreparedStatement addUser = connection.prepareStatement(
                 "INSERT INTO p_user (username, email, password, number_of_played_games, number_of_wins) " +
                     "VALUES (?, ?, ?, ?, ?)"
@@ -81,7 +88,7 @@ public class UserService {
         addUser.setInt(5, user.getNumOfWins());
         
         addUser.executeUpdate();
-        System.out.printf("add user: %s \n", user);
+        System.out.println("added user: " + user);
     }
     
     //todo: check for email uniqueness
