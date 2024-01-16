@@ -12,16 +12,6 @@ public class GamesManager {
 
     public void awaitForSession1v1(User user)
     {
-        synchronized (awaitingUsersOn1v1)
-        {
-            if(awaitingUsersOn1v1.size() > 0)
-            {
 
-            }
-            else
-            {
-                awaitingUsersOn1v1.add(user);
-            }
-        }
     }
 }

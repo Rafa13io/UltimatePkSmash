@@ -90,7 +90,7 @@ public class UserService {
         System.out.println("added user: " + user);
         addUser.close();
     }
-    
+
     public void addSmasherToUser(Long userId, Long smasherId) throws SQLException {
         String sql = "insert into p_smasher_user(user_id, smasher_id) values (?,?);";
         PreparedStatement addSmasherToUser = connection.prepareStatement(sql);

@@ -1,21 +1,12 @@
 package server.ultimatepksmash.server.messages;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.io.Serializable;
-
+@Data
+@AllArgsConstructor
 public class RegisterResp implements Serializable {
-    private boolean result;
+    private boolean successful;
     private String message;
-
-    public RegisterResp(boolean result, String message) {
-        this.result = result;
-        this.message = message;
-    }
-
-    public boolean getResult() {
-        return result;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

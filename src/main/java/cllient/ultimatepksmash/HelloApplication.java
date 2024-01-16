@@ -4,10 +4,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import server.ultimatepksmash.server.messages.InitReq;
-import server.ultimatepksmash.server.messages.InitType;
+import server.ultimatepksmash.server.messages.RegisterReq;
 import server.ultimatepksmash.server.messages.LogInResp;
-
+import server.ultimatepksmash.server.messages.RegisterResp;
+import server.ultimatepksmash.server.messages.LogInReq;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,18 +30,30 @@ public class HelloApplication extends Application {
     public static void TestServer() throws IOException {
         Socket socket = null;
         try {
+
             socket = new Socket("localhost", 25800);
+            System.out.println("Connection opened");
+            ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Sending Init request");
+            output.writeObject(new RegisterReq("rafalo", "123", "rafalo@gmail.com"));
 
-        //socket.setSoTimeout(5000);
-        System.out.println("Message received");
-        ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-        System.out.println("Sending Init request");
-        output.writeObject(new InitReq(InitType.logIn, "Rafal", "123", ""));
-
-        LogInResp logInResp =  (LogInResp) input.readObject();
-        System.out.println(logInResp.isSuccess() + " " + logInResp.getUser());
+            RegisterResp registerResp =  (RegisterResp) input.readObject();
+            System.out.println("Register status:" + registerResp.isSuccessful() + " " + registerResp.getMessage());
             socket.close();
+
+            socket = new Socket("localhost", 25800);
+            System.out.println("Connection opened");
+            output = new ObjectOutputStream(socket.getOutputStream());
+            input = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Sending Init request");
+            output.writeObject(new LogInReq("rafalo", "123"));
+
+            LogInResp logInResp =  (LogInResp) input.readObject();
+            System.out.println("Login status:" + logInResp.isSuccess() + " " + logInResp.getUser());
+            socket.close();//after successful login socket should be kept open
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

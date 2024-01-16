@@ -1,23 +1,21 @@
 package server.ultimatepksmash.server;
 
-import server.ultimatepksmash.server.database.DataBaseService;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.database.user.UserService;
-import server.ultimatepksmash.server.messages.InitReq;
-import server.ultimatepksmash.server.messages.InitType;
+import server.ultimatepksmash.server.messages.LogInReq;
+import server.ultimatepksmash.server.messages.RegisterReq;
 import server.ultimatepksmash.server.messages.LogInResp;
 import server.ultimatepksmash.server.messages.RegisterResp;
-import server.ultimatepksmash.server.session.SessionEndReason;
 import server.ultimatepksmash.server.session.SessionEndStatus;
 import server.ultimatepksmash.server.session.UserSession;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -55,34 +53,44 @@ public class Server {
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("Waiting for Init request");
-            InitReq initReq =  (InitReq) input.readObject();
-
-            switch (initReq.getInitType())
+            Object obj =  (Object) input.readObject();
+            UserService userService = new UserService();
+            if(obj instanceof LogInReq)
             {
-                case logIn:
-                    UserService userService = new UserService();
+                LogInReq logInReq  = (LogInReq) obj;
+                try {
                     User user;
-                    try {
-                        user = userService.getUser(initReq.getUserName(), initReq.getUserPassword());
-                        output.writeObject(new LogInResp(true, user));
-                        FutureTask<SessionEndStatus> futureTask =new FutureTask<SessionEndStatus>(new UserSession(socket));
-                        executorService.execute(futureTask);
-                        writeLock.lock();
-                        sessionList.add(futureTask);
-                        writeLock.unlock();
-                    }
-                    catch (Exception e)
-                    {
-                        output.writeObject(new LogInResp(false, null));
-                        System.out.println("Problem with executing sql statement");
-                        socket.close();
-                    }
-
-                    break;
-                case register:
-                    //TODO: implement this
-                    output.writeObject(new RegisterResp(false, "Registration not implemented yet"));
+                    user = userService.getUser(logInReq.getUserName(), logInReq.getUserPassword());
+                    output.writeObject(new LogInResp(true, user));
+                    FutureTask<SessionEndStatus> futureTask =new FutureTask<SessionEndStatus>(new UserSession(socket));
+                    executorService.execute(futureTask);
+                    writeLock.lock();
+                    sessionList.add(futureTask);
+                    writeLock.unlock();
+                }
+                catch (Exception e)
+                {
+                    output.writeObject(new LogInResp(false, null));
+                    System.out.println("Problem with executing sql statement");
                     socket.close();
+                }
+            }
+            else if(obj instanceof RegisterReq)
+            {
+                RegisterReq registerReq = (RegisterReq) obj;
+                try {
+                    User user = new User(registerReq.getUserName(), registerReq.getUserEmail(), registerReq.getUserPassword());
+                    userService.addUser(user);
+                    output.writeObject(new RegisterResp(true, "Register successful"));
+                    socket.close();
+                }
+                catch (Exception e)
+                {
+                    output.writeObject(new RegisterResp(false, "Registration failed"));
+                    System.out.println("Problem with executing sql statement while trying to register new user");
+                    socket.close();
+                }
+
             }
             executorService.shutdown();
         }

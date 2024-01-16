@@ -1,7 +1,5 @@
 package server.ultimatepksmash.server;
 
-import server.ultimatepksmash.server.database.user.UserService;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -9,7 +7,7 @@ import static server.ultimatepksmash.server.database.DataBaseService.closeConnec
 import static server.ultimatepksmash.server.database.DataBaseService.connectToDatabase;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         try {
             connectToDatabase();
             Server server = new Server(25800);
@@ -21,14 +19,7 @@ public class Main {
             throw new RuntimeException(e);
         }
         finally {
-            try {
-                closeConnection();
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException("Problem while closing database");
-            }
-
+         closeConnection();
         }
     }
 }

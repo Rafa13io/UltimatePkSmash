@@ -3,21 +3,15 @@ package server.ultimatepksmash.server.messages;
 
 import java.io.Serializable;
 
-public class InitReq implements Serializable {
-    private InitType initType;
+public class RegisterReq implements Serializable {
     private String userName;
     private String userPassword;
     private String userEmail;
 
-    public InitReq(InitType initType, String userName, String userPassword, String userEmail) {
-        this.initType = initType;
+    public RegisterReq( String userName, String userPassword, String userEmail) {
         this.userName = userName;
         this.userPassword = userPassword;
         this.userEmail = userEmail;
-    }
-
-    public InitType getInitType() {
-        return initType;
     }
 
     public String getUserName() {

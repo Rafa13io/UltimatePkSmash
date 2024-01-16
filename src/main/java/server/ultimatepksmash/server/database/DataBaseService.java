@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.user.UserService;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

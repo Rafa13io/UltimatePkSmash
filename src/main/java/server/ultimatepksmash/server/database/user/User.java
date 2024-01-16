@@ -2,8 +2,8 @@ package server.ultimatepksmash.server.database.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.io.Serializable;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 import server.ultimatepksmash.server.database.samsher.Smasher;
 import java.util.List;
 

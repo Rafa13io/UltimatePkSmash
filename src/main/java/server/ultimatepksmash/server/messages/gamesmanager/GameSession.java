@@ -53,20 +53,20 @@ public class GameSession {
     }
     public void waitForReceivingPart()
     {
-        if(onGoingRoundBlockReceiving.tryLock())
-        {
-            onGoingRoundBlockReceiving.lock();
-        }
-        onGoingRoundAllowSending.lock();
+//        if(onGoingRoundBlockReceiving.tryLock())
+//        {
+//            onGoingRoundBlockReceiving.lock();
+//        }
+//        onGoingRoundAllowSending.lock();
     }
 
     public void waitForSendingPart()
     {
-        if(onGoingRoundBlockSending.tryLock())
-        {
-            onGoingRoundBlockSending.lock();
-        }
-        onGoingRoundAllowReceiving.lock();
+//        if(onGoingRoundBlockSending.tryLock())
+//        {
+//            onGoingRoundBlockSending.lock();
+//        }
+//        onGoingRoundAllowReceiving.lock();
     }
 
     public void notifyMessageReceived()
