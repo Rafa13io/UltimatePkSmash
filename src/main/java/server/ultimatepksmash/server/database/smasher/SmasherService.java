@@ -36,7 +36,19 @@ public class SmasherService {
         getSmashers.close();
         return smashers;
     }
-    
+
+    public Smasher getSmasher(Long id) throws SQLException {
+        PreparedStatement getSmashers = connection.prepareStatement("SELECT * FROM p_smasher where id = ?");
+        getSmashers.setLong(1, id);
+        ResultSet resultSet = getSmashers.executeQuery();
+        resultSet.next();
+        Smasher smasher = new Smasher();
+        mapSmasher(smasher, resultSet);
+        resultSet.close();
+        getSmashers.close();
+        return smasher;
+    }
+
     // returns list of smashers owned by a user (id)
     public List<Smasher> getUserSmashers(Long userId) throws SQLException {
         String sql = "select * from p_smasher ps join p_smasher_user psu on psu.smasher_id = ps.id where psu.user_id = ?;";
@@ -62,7 +74,7 @@ public class SmasherService {
         smasher.setId(resultSet.getLong("id"));
         smasher.setName(resultSet.getString("name"));
         smasher.setDescription(resultSet.getString("description"));
-        smasher.setHealthPoints(resultSet.getString("health_points"));
+        smasher.setHealthPoints(resultSet.getDouble("health_points"));
         smasher.setEcts(resultSet.getInt("ECTS"));
         smasher.setPhotoPath("none"); //todo: make it later
         
