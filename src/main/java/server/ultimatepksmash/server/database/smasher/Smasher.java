@@ -14,7 +14,7 @@ public class Smasher implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private String healthPoints;
     private Integer ects;
+    private int healthPoints;
     private String photoPath;
 }

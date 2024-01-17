@@ -1,16 +1,20 @@
 package server.ultimatepksmash.server.session;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.samsher.Smasher;
+import server.ultimatepksmash.server.database.samsher.SmasherService;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
+import server.ultimatepksmash.server.gamesmanager.GameSession;
+import server.ultimatepksmash.server.gamesmanager.GamesManager;
 import server.ultimatepksmash.server.messages.BattleStart1v1Req;
-import server.ultimatepksmash.server.messages.BattleStart1v1Response;
 import server.ultimatepksmash.server.messages.LogOutReq;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.concurrent.Callable;
 @AllArgsConstructor
 public class UserSession implements Callable<SessionEndStatus> {
@@ -34,7 +38,7 @@ public class UserSession implements Callable<SessionEndStatus> {
             Object req =  (Object) input.readObject();
             if(req instanceof BattleStart1v1Req)
             {
-                battle1v1Chosen();
+                battle1v1Chosen((BattleStart1v1Req) req);
             }else if(req instanceof LogOutReq)
             {
                 System.out.println("Loged out user:" + user.getUsername());
@@ -51,13 +55,15 @@ public class UserSession implements Callable<SessionEndStatus> {
         }
     }
 
-    private void battle1v1Chosen() throws IOException, ClassNotFoundException {
+    private void battle1v1Chosen(BattleStart1v1Req battleStart1v1Req) throws IOException, ClassNotFoundException, SQLException {
         System.out.println("User wants"+ user.getUsername() +" to play 1v1 batlle");
         //BattleStart1v1Req battleStart1V1Req = (BattleStart1v1Req) input.readObject();
-
-        Smasher mySmasher = new Smasher(0L,"pi","description", "100", 1, "\\photo");
-        Smasher oponentsSmasher = new Smasher(1L,"kolo","description", "100", 2,"\\photo");
-        output.writeObject(new BattleStart1v1Response(mySmasher, oponentsSmasher));
+        SmasherService smasherService = new SmasherService();
+        Smasher mySmasher = smasherService.getSmasher(battleStart1v1Req.getUsersSmasherId());
+        System.out.println("Try to join game session");
+        GameSession gameSession = GamesManager.joinGameSession1v1(user, mySmasher);
+        System.out.println("User " + user.getUsername() +" have joined game session");
+        output.writeObject(gameSession.getBattleStartResponse());
     }
     private void logReq(Object req)
     {

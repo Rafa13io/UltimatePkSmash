@@ -28,7 +28,7 @@ public class ServerTest {
             LogInResp logInResp = (LogInResp) input.readObject();
             System.out.println("Login status:" + logInResp.isSuccess() + " " + logInResp.getUser());
             output.writeObject(new BattleStart1v1Req(1L));
-            BattleStart1v1Response battleStart1v1Response = (BattleStart1v1Response) input.readObject();
+            BattleStartResponse battleStart1v1Response = (BattleStartResponse) input.readObject();
             System.out.println(battleStart1v1Response);
             output.writeObject(new LogOutReq());
             socket.close();//after successful login socket should be kept open
