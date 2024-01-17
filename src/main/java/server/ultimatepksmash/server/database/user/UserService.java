@@ -25,7 +25,6 @@ public class UserService {
         while (resultSet.next()) {
             User user = new User();
             mapUser(user, resultSet);
-            
             users.add(user);
         }
 

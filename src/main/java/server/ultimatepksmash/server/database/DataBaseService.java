@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.skills.defence.DefenceService;
 import server.ultimatepksmash.server.database.smasher.SmasherService;
 import server.ultimatepksmash.server.database.skills.attack.AttackService;
 import server.ultimatepksmash.server.database.user.UserService;
@@ -67,6 +68,7 @@ public class DataBaseService {
         SmasherService smasherService = new SmasherService();
         UserService userService = new UserService();
         AttackService attackService = new AttackService();
+        DefenceService defenceService = new DefenceService();
         
         printList(userService.getUsers());
         printList(smasherService.getSmashers());
@@ -77,6 +79,14 @@ public class DataBaseService {
         printList(attackService.getSmasherAttacks(5L));
         printList(attackService.getSmasherAttacks(6L));
         printList(attackService.getSmasherAttacks(7L));
+        
+        printList(defenceService.getSmasherDefences(1L));
+        printList(defenceService.getSmasherDefences(2L));
+        printList(defenceService.getSmasherDefences(3L));
+        printList(defenceService.getSmasherDefences(4L));
+        printList(defenceService.getSmasherDefences(5L));
+        printList(defenceService.getSmasherDefences(6L));
+        printList(defenceService.getSmasherDefences(7L));
     
 //        userService.addUser(new User("user21222","email@pl.com","123"));
     }
