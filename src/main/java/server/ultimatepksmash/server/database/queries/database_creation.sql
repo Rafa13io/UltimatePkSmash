@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS p_smasher
     "name" VARCHAR(30) NOT NULL,
     description VARCHAR NOT NULL,
     health_points INT NOT NULL,
+    ECTS INT NOT NULL,
     photo_path VARCHAR
 );
 
