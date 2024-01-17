@@ -1,0 +1,16 @@
+INSERT INTO public.p_defence_skill ("name",description,"type",defence_points,smasher_id) VALUES
+	 ('zmiana pozycji','','powietrzny',9,1),
+	 ('osłona','','fizyczny',5,1),
+	 ('osłona krzemowa','','ognisty',8,2),
+	 ('blokada ekranem','','fizyczny',7,2),
+	 ('smocze łuski','','ognisty',9,3),
+	 ('osłona skrzydłami','','powietrzny',6,3),
+	 ('domyślna obrona','','fizyczny',3,4),
+	 ('izolacja od ziemi','','elektryczny',8,4),
+	 ('garda','','fizyczny',8,5),
+	 ('unik','','powietrzny',9,5),
+	 ('try{} catch()','','elektryczny',10,6),
+	 ('porcelanowa tarcza','','ognisty',6,6),
+	 ('plemienna zbroja','','wszystkie',4,7),
+	 ('czerwona kurtka','','ognisty',8,7),
+	 ('fikuśna czapeczka','','brak_typu',0,7);

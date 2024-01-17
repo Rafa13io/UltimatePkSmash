@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS p_attack_skill
 (
     id SERIAL PRIMARY KEY,
     "name" VARCHAR not null,
-    description VARCHAR(60) NOT NULL,
+    description VARCHAR(60),
     "type" VARCHAR(60) NOT NULL,
     attack_points INT not null,
     smasher_id INT NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS p_defence_skill
 (
     id SERIAL PRIMARY KEY,
     "name" VARCHAR not null,
-    description VARCHAR(60) NOT NULL,
+    description VARCHAR(60),
     "type" VARCHAR(60) NOT NULL,
     defence_points INT NOT NULL,
     smasher_id INT NOT NULL,
@@ -47,14 +47,12 @@ CREATE TABLE IF NOT EXISTS p_defence_skill
 
 CREATE TABLE IF NOT EXISTS p_smasher_user
 (
-    id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     smasher_id INT NOT NULL,
-    experience_points INT, --?
+    PRIMARY KEY (user_id, smasher_id),
     FOREIGN KEY (user_id) REFERENCES p_user(id),
     FOREIGN KEY (smasher_id) REFERENCES p_smasher(id)
 );
-
 
 
 CREATE TABLE IF NOT EXISTS p_result_1vs1 (

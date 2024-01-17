@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
@@ -23,13 +24,7 @@ public class UserService {
         // Iterate over the rows
         while (resultSet.next()) {
             User user = new User();
-            user.setId(resultSet.getLong("id"));
-            user.setUsername(resultSet.getString("username"));
-            user.setEmail(resultSet.getString("email"));
-            user.setPassword(resultSet.getString("password"));
-            user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
-            user.setNumOfWins(resultSet.getInt("number_of_wins"));
-            
+            mapUser(user, resultSet);
             users.add(user);
         }
 
@@ -38,29 +33,33 @@ public class UserService {
         return users;
     }
     
-    public User getUser(String username, String email) throws SQLException {
-        PreparedStatement getUser = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND email = ?");
+    public User getUser(String username, String password) throws SQLException {
+        PreparedStatement getUser = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND password = ?");
         getUser.setString(1, username);
-        getUser.setString(2, email);
+        getUser.setString(2, password);
         
         ResultSet resultSet = getUser.executeQuery();
         
         resultSet.next(); // move to the returned row
         User user = new User();
+        mapUser(user, resultSet);
+
+        if (resultSet.next()) {
+            throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
+        }
+
+        resultSet.close();
+        getUser.close();
+        return user;
+    }
+
+    private static void mapUser(User user, ResultSet resultSet) throws SQLException {
         user.setId(resultSet.getLong("id"));
         user.setUsername(resultSet.getString("username"));
         user.setEmail(resultSet.getString("email"));
         user.setPassword(resultSet.getString("password"));
         user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
         user.setNumOfWins(resultSet.getInt("number_of_wins"));
-        
-        if (resultSet.next()) {
-            throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
-        }
-        
-        resultSet.close();
-        getUser.close();
-        return user;
     }
     
     /**
@@ -69,6 +68,12 @@ public class UserService {
      * @throws SQLException
      */
     public void addUser(User user) throws SQLException {
+        List<String> usernames;
+        usernames = getUsers().stream().map(User::getUsername).collect(Collectors.toList());
+        if(usernames.contains(user.getUsername())) {
+            throw new RuntimeException("username not available");
+        }
+
         PreparedStatement addUser = connection.prepareStatement(
                 "INSERT INTO p_user (username, email, password, number_of_played_games, number_of_wins) " +
                     "VALUES (?, ?, ?, ?, ?)"
@@ -79,11 +84,18 @@ public class UserService {
         addUser.setString(3, user.getPassword());
         addUser.setInt(4, user.getNumOfPlayedGames());
         addUser.setInt(5, user.getNumOfWins());
-        
+
         addUser.executeUpdate();
-        System.out.printf("add user: %s \n", user);
+        System.out.println("added user: " + user);
+        addUser.close();
     }
-    
-    //todo: check for email uniqueness
-    
+
+    public void addSmasherToUser(Long userId, Long smasherId) throws SQLException {
+        String sql = "insert into p_smasher_user(user_id, smasher_id) values (?,?);";
+        PreparedStatement addSmasherToUser = connection.prepareStatement(sql);
+        addSmasherToUser.setLong(1, userId);
+        addSmasherToUser.setLong(1, smasherId);
+        addSmasherToUser.executeUpdate();
+        addSmasherToUser.close();
+    }
 }
