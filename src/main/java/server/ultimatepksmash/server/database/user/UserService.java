@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class UserService {
-    private final Connection connection = DataBaseService.connection;
+    private static final Connection connection = DataBaseService.connection;
     
     public List<User> getUsers() throws SQLException {
         PreparedStatement getUsers = connection.prepareStatement("SELECT * FROM p_user");
