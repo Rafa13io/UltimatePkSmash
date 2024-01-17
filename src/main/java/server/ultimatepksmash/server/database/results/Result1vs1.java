@@ -11,6 +11,11 @@ import lombok.NoArgsConstructor;
 public class Result1vs1 {
     private Long id;
     private String date;
-    private Long winner_id;
-    private Long loser_id;
+    private Long winnerId;
+    private Long loserId;
+    
+    public Result1vs1(Long winnerId, Long loserId) {
+        this.winnerId = winnerId;
+        this.loserId = loserId;
+    }
 }

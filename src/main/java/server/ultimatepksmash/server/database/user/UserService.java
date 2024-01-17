@@ -34,7 +34,8 @@ public class UserService {
     }
     
     public User getUser(String username, String password) throws SQLException {
-        PreparedStatement getUser = connection.prepareStatement("SELECT * FROM p_user WHERE username = ? AND password = ?");
+        String sql = "SELECT * FROM p_user WHERE username = ? AND password = ?";
+        PreparedStatement getUser = connection.prepareStatement(sql);
         getUser.setString(1, username);
         getUser.setString(2, password);
         
@@ -51,15 +52,6 @@ public class UserService {
         resultSet.close();
         getUser.close();
         return user;
-    }
-
-    private static void mapUser(User user, ResultSet resultSet) throws SQLException {
-        user.setId(resultSet.getLong("id"));
-        user.setUsername(resultSet.getString("username"));
-        user.setEmail(resultSet.getString("email"));
-        user.setPassword(resultSet.getString("password"));
-        user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
-        user.setNumOfWins(resultSet.getInt("number_of_wins"));
     }
     
     /**
@@ -97,5 +89,43 @@ public class UserService {
         addSmasherToUser.setLong(1, smasherId);
         addSmasherToUser.executeUpdate();
         addSmasherToUser.close();
+    }
+    
+    public void addWinToUser(Long userId) throws SQLException {
+        String sql = """
+                UPDATE p_user
+                SET
+                    number_of_played_games = number_of_played_games + 1,
+                    number_of_wins = number_of_wins + 1
+                WHERE
+                    id = ?;
+                """;
+        PreparedStatement addWinToUser = connection.prepareStatement(sql);
+        addWinToUser.setLong(1, userId);
+        addWinToUser.executeUpdate();
+        addWinToUser.close();
+    }
+    
+    public void addLoseToUser(Long userId) throws SQLException {
+        String sql = """
+                UPDATE p_user
+                SET
+                    number_of_played_games = number_of_played_games + 1
+                WHERE
+                    id = ?;
+                """;
+        PreparedStatement addLoseToUser = connection.prepareStatement(sql);
+        addLoseToUser.setLong(1, userId);
+        addLoseToUser.executeUpdate();
+        addLoseToUser.close();
+    }
+    
+    private static void mapUser(User user, ResultSet resultSet) throws SQLException {
+        user.setId(resultSet.getLong("id"));
+        user.setUsername(resultSet.getString("username"));
+        user.setEmail(resultSet.getString("email"));
+        user.setPassword(resultSet.getString("password"));
+        user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
+        user.setNumOfWins(resultSet.getInt("number_of_wins"));
     }
 }

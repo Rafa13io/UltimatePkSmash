@@ -1,9 +1,9 @@
 package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
-import server.ultimatepksmash.server.database.skills.defence.DefenceService;
+import server.ultimatepksmash.server.database.results.Result2vs2;
+import server.ultimatepksmash.server.database.results.ResultService;
 import server.ultimatepksmash.server.database.smasher.SmasherService;
-import server.ultimatepksmash.server.database.skills.attack.AttackService;
 import server.ultimatepksmash.server.database.user.UserService;
 
 import java.sql.Connection;
@@ -65,14 +65,20 @@ public class DataBaseService {
     public static void main(String[] args) throws SQLException {
         connectToDatabase();
         
-        AttackService attackService = new AttackService();
-        DefenceService defenceService = new DefenceService();
-        SmasherService smasherService = new SmasherService(attackService, defenceService);
-        SmasherService smasherServic2 = new SmasherService();
+        SmasherService smasherService = new SmasherService();
         UserService userService = new UserService();
+        ResultService resultService = new ResultService();
         
-        printList(userService.getUsers());
-        printList(smasherService.getSmashers());
+//        printList(userService.getUsers());
+//        printList(smasherService.getSmashers());
+//        System.out.println(new Date());
+//        resultService.addResult1vs1(new Result1vs1(1L, 2L));
+        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
+        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
+        
+        printList(resultService.getResults1vs1());
+        printList(resultService.getResults2vs2());
+
 //        printList(attackService.getSmasherAttacks(1L));
 //        printList(attackService.getSmasherAttacks(2L));
 //        printList(attackService.getSmasherAttacks(3L));
