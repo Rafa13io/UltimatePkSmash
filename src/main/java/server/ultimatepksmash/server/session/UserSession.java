@@ -1,9 +1,8 @@
 package server.ultimatepksmash.server.session;
 
 import lombok.AllArgsConstructor;
-import server.ultimatepksmash.server.database.samsher.Smasher;
-import server.ultimatepksmash.server.database.samsher.SmasherService;
 import server.ultimatepksmash.server.database.smasher.Smasher;
+import server.ultimatepksmash.server.database.smasher.SmasherService;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.gamesmanager.GameSession;
 import server.ultimatepksmash.server.gamesmanager.GamesManager;

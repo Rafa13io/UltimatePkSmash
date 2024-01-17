@@ -1,10 +1,7 @@
 package server.ultimatepksmash.server.gamesmanager;
 
-import server.ultimatepksmash.server.database.samsher.Smasher;
+import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GamesManager {
 

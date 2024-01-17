@@ -1,6 +1,6 @@
 package server.ultimatepksmash.server.gamesmanager;
 
-import server.ultimatepksmash.server.database.samsher.Smasher;
+import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.messages.BattleStartResponse;
 import server.ultimatepksmash.server.messages.StartRoundReq;
@@ -135,8 +135,8 @@ public class GameSession {
                     {
                         Smasher smasherTeamA = smashers.get(aIndex);
                         Smasher smasherTeamB = smashers.get(bIndex);
-                        int healthPointsTeamA = smasherTeamA.getHealthPoints();
-                        int healthPointsTeamB = smasherTeamB.getHealthPoints();
+                        Double healthPointsTeamA = smasherTeamA.getHealthPoints();
+                        Double healthPointsTeamB = smasherTeamB.getHealthPoints();
                         //excute round
 
                         startRoundResp.setDamageTeamsA(healthPointsTeamA - smasherTeamA.getHealthPoints());

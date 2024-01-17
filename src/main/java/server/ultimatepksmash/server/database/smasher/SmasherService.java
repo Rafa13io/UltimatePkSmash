@@ -37,7 +37,6 @@ public class SmasherService {
         resultSet.next();
         Smasher smasher = new Smasher();
         mapSmasher(smasher, resultSet);
-
         resultSet.close();
         getSmashers.close();
         return smasher;
@@ -68,7 +67,7 @@ public class SmasherService {
         smasher.setId(resultSet.getLong("id"));
         smasher.setName(resultSet.getString("name"));
         smasher.setDescription(resultSet.getString("description"));
-        smasher.setHealthPoints(resultSet.getInt("health_points"));
+        smasher.setHealthPoints(resultSet.getDouble("health_points"));
         smasher.setEcts(resultSet.getInt("ECTS"));
         smasher.setPhotoPath("none"); //todo: make it later
     }

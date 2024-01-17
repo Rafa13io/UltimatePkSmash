@@ -9,8 +9,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StartRoundResp implements Serializable {//end round resp
-    int damageTeamsA;
-    int damageTeamsB ;
+    Double damageTeamsA;
+    Double damageTeamsB ;
     boolean wasAttackFatalForTeamA = false;
     boolean wasAttackFatalForTeamB = false;
     private Long idAttackTeamA = null;

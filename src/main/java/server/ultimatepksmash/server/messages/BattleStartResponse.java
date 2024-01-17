@@ -3,7 +3,7 @@ package server.ultimatepksmash.server.messages;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import server.ultimatepksmash.server.database.samsher.Smasher;
+import server.ultimatepksmash.server.database.smasher.Smasher;
 
 import java.io.Serializable;
 import java.util.ArrayList;
