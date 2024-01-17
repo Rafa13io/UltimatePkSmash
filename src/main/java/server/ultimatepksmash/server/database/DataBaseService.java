@@ -32,7 +32,7 @@ public class DataBaseService {
 
     public static void connectToDatabase() throws SQLException {
         String dbName = "ultimatepksmashers";
-        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String url = "jdbc:postgresql://localhost:5432/";
 
         try {
             connection = DriverManager.getConnection(url, "postgres", "postgres");

@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
-public class BattleStart1v1Req implements Serializable {
-    private Long usersSmasherId;
+public class StartRoundReq implements Serializable {
+    private Long idAttack;
+    private Long idDefence;
 }

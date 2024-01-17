@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS p_smasher
     id SERIAL PRIMARY KEY,
     "name" VARCHAR(30) NOT NULL,
     description VARCHAR NOT NULL,
-    health_points INT NOT NULL,
+    health_points DECIMAL(10,2) NOT NULL,
     ECTS INT NOT NULL,
     photo_path VARCHAR
 );

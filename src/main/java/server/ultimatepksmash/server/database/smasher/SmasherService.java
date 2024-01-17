@@ -79,7 +79,7 @@ public class SmasherService {
         smasher.setId(resultSet.getLong("id"));
         smasher.setName(resultSet.getString("name"));
         smasher.setDescription(resultSet.getString("description"));
-        smasher.setHealthPoints(resultSet.getString("health_points"));
+        smasher.setHealthPoints(resultSet.getDouble("health_points"));
         smasher.setEcts(resultSet.getInt("ECTS"));
         smasher.setPhotoPath("none"); //todo: make it later
         
