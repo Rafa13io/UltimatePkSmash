@@ -1,7 +1,7 @@
 package server.ultimatepksmash.server.database.smasher;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import server.ultimatepksmash.server.database.DataBaseService;
 import server.ultimatepksmash.server.database.skills.attack.AttackService;
 import server.ultimatepksmash.server.database.skills.defence.DefenceService;
@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class SmasherService {
     private static final Connection connection = DataBaseService.connection;
-    private final AttackService attackService;
-    private final DefenceService defenceService;
+    private AttackService attackService = new AttackService();
+    private DefenceService defenceService = new DefenceService();
     
     public List<Smasher> getSmashers() throws SQLException {
         PreparedStatement getSmashers = connection.prepareStatement("SELECT * FROM p_smasher");
@@ -35,6 +36,22 @@ public class SmasherService {
         resultSet.close();
         getSmashers.close();
         return smashers;
+    }
+    
+    public Smasher getSmasher(Long smasherId) throws SQLException {
+        String sql = "select * from p_smasher where id = ?;";
+        PreparedStatement getSmasher = connection.prepareStatement(sql);
+        getSmasher.setLong(1, smasherId);
+        ResultSet resultSet = getSmasher.executeQuery();
+        
+        // Iterate over the rows
+        resultSet.next();
+        Smasher smasher = new Smasher();
+        mapSmasher(smasher, resultSet);
+        
+        resultSet.close();
+        getSmasher.close();
+        return smasher;
     }
     
     // returns list of smashers owned by a user (id)
@@ -66,7 +83,9 @@ public class SmasherService {
         smasher.setEcts(resultSet.getInt("ECTS"));
         smasher.setPhotoPath("none"); //todo: make it later
         
-        smasher.setAttacks(attackService.getSmasherAttacks(smasher.getId()));
-        smasher.setDefences(defenceService.getSmasherDefences(smasher.getId()));
+        if (attackService != null && defenceService != null) {
+            smasher.setAttacks(attackService.getSmasherAttacks(smasher.getId()));
+            smasher.setDefences(defenceService.getSmasherDefences(smasher.getId()));
+        }
     }
 }

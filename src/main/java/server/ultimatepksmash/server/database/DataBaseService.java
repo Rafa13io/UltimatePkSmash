@@ -68,6 +68,7 @@ public class DataBaseService {
         AttackService attackService = new AttackService();
         DefenceService defenceService = new DefenceService();
         SmasherService smasherService = new SmasherService(attackService, defenceService);
+        SmasherService smasherServic2 = new SmasherService();
         UserService userService = new UserService();
         
         printList(userService.getUsers());
