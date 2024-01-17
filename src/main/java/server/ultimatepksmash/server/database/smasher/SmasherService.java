@@ -1,4 +1,4 @@
-package server.ultimatepksmash.server.database.samsher;
+package server.ultimatepksmash.server.database.smasher;
 
 import server.ultimatepksmash.server.database.DataBaseService;
 

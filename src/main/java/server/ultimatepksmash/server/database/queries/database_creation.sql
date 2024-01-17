@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS p_attack_skill
 (
     id SERIAL PRIMARY KEY,
     "name" VARCHAR not null,
-    description VARCHAR(60) NOT NULL,
+    description VARCHAR(60),
     "type" VARCHAR(60) NOT NULL,
     attack_points INT not null,
     smasher_id INT NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS p_defence_skill
 (
     id SERIAL PRIMARY KEY,
     "name" VARCHAR not null,
-    description VARCHAR(60) NOT NULL,
+    description VARCHAR(60),
     "type" VARCHAR(60) NOT NULL,
     defence_points INT NOT NULL,
     smasher_id INT NOT NULL,

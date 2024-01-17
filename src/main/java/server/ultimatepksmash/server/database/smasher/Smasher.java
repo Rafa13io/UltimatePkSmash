@@ -1,4 +1,4 @@
-package server.ultimatepksmash.server.database.samsher;
+package server.ultimatepksmash.server.database.smasher;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

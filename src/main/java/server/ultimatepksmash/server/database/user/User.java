@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
-import server.ultimatepksmash.server.database.samsher.Smasher;
+import server.ultimatepksmash.server.database.smasher.Smasher;
 import java.util.List;
 
 @Data

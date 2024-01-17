@@ -1,7 +1,7 @@
 package server.ultimatepksmash.server.session;
 
 import lombok.AllArgsConstructor;
-import server.ultimatepksmash.server.database.samsher.Smasher;
+import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.messages.BattleStart1v1Req;
 import server.ultimatepksmash.server.messages.BattleStart1v1Response;
@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketPermission;
 import java.util.concurrent.Callable;
 @AllArgsConstructor
 public class UserSession implements Callable<SessionEndStatus> {
