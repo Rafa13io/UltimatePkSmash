@@ -65,28 +65,28 @@ public class DataBaseService {
     public static void main(String[] args) throws SQLException {
         connectToDatabase();
         
-        SmasherService smasherService = new SmasherService();
-        UserService userService = new UserService();
         AttackService attackService = new AttackService();
         DefenceService defenceService = new DefenceService();
+        SmasherService smasherService = new SmasherService(attackService, defenceService);
+        UserService userService = new UserService();
         
         printList(userService.getUsers());
         printList(smasherService.getSmashers());
-        printList(attackService.getSmasherAttacks(1L));
-        printList(attackService.getSmasherAttacks(2L));
-        printList(attackService.getSmasherAttacks(3L));
-        printList(attackService.getSmasherAttacks(4L));
-        printList(attackService.getSmasherAttacks(5L));
-        printList(attackService.getSmasherAttacks(6L));
-        printList(attackService.getSmasherAttacks(7L));
-        
-        printList(defenceService.getSmasherDefences(1L));
-        printList(defenceService.getSmasherDefences(2L));
-        printList(defenceService.getSmasherDefences(3L));
-        printList(defenceService.getSmasherDefences(4L));
-        printList(defenceService.getSmasherDefences(5L));
-        printList(defenceService.getSmasherDefences(6L));
-        printList(defenceService.getSmasherDefences(7L));
+//        printList(attackService.getSmasherAttacks(1L));
+//        printList(attackService.getSmasherAttacks(2L));
+//        printList(attackService.getSmasherAttacks(3L));
+//        printList(attackService.getSmasherAttacks(4L));
+//        printList(attackService.getSmasherAttacks(5L));
+//        printList(attackService.getSmasherAttacks(6L));
+//        printList(attackService.getSmasherAttacks(7L));
+//
+//        printList(defenceService.getSmasherDefences(1L));
+//        printList(defenceService.getSmasherDefences(2L));
+//        printList(defenceService.getSmasherDefences(3L));
+//        printList(defenceService.getSmasherDefences(4L));
+//        printList(defenceService.getSmasherDefences(5L));
+//        printList(defenceService.getSmasherDefences(6L));
+//        printList(defenceService.getSmasherDefences(7L));
     
 //        userService.addUser(new User("user21222","email@pl.com","123"));
     }
