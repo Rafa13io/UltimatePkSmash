@@ -56,6 +56,7 @@ public class SmasherService {
         smasher.setName(resultSet.getString("name"));
         smasher.setDescription(resultSet.getString("description"));
         smasher.setHealthPoints(resultSet.getString("health_points"));
+        smasher.setEcts(resultSet.getInt("ECTS"));
         smasher.setPhotoPath("none"); //todo: make it later
     }
     

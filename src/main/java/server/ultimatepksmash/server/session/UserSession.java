@@ -55,8 +55,8 @@ public class UserSession implements Callable<SessionEndStatus> {
         System.out.println("User wants"+ user.getUsername() +" to play 1v1 batlle");
         //BattleStart1v1Req battleStart1V1Req = (BattleStart1v1Req) input.readObject();
 
-        Smasher mySmasher = new Smasher(0L,"pi","description", "100", "\\photo");
-        Smasher oponentsSmasher = new Smasher(1L,"kolo","description", "100", "\\photo");
+        Smasher mySmasher = new Smasher(0L,"pi","description", "100", 1, "\\photo");
+        Smasher oponentsSmasher = new Smasher(1L,"kolo","description", "100", 2,"\\photo");
         output.writeObject(new BattleStart1v1Response(mySmasher, oponentsSmasher));
     }
     private void logReq(Object req)

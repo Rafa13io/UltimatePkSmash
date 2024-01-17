@@ -15,5 +15,6 @@ public class Smasher implements Serializable {
     private String name;
     private String description;
     private String healthPoints;
+    private Integer ects;
     private String photoPath;
 }
