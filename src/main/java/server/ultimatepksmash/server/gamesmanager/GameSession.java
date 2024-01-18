@@ -78,35 +78,22 @@ public class GameSession {
         }
         waitForOtherPlayers();
     }
-    ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    Lock read  = readWriteLock.readLock();
-    Lock write = readWriteLock.writeLock();
     protected void waitForOtherPlayers()
     {
         numberOfPlayersReadyWriteLock.lock();
         numberOfPlayersReady++;
         if(numberOfPlayerInGame != numberOfPlayersReady)
         {
-            read.lock();
             while (numberOfPlayerInGame != numberOfPlayersReady) {
                 numberOfPlayersReadyWriteLock.unlock();
                 numberOfPlayersReadyWriteLock.lock();
             }
-            numberOfPlayersReadyWriteLock.unlock();
-            read.unlock();
-            write.lock();
-            System.out.println("numberOfPlayersReady:   "+numberOfPlayersReady);
             if(numberOfPlayersReady == numberOfPlayerInGame) numberOfPlayersReady = 0;
-            write.unlock();
         }
-        else
-        {
-            numberOfPlayersReadyWriteLock.unlock();
-        }
-
+        numberOfPlayersReadyWriteLock.unlock();
     }
 
-    public boolean isUserPlaying(User user)
+    public void isUserPlaying(User user)
     {
         boolean result = false;
         indexLock.lock();
@@ -116,7 +103,6 @@ public class GameSession {
             result = indexOf == aIndex || indexOf == bIndex;
         }
         indexLock.unlock();
-        return result;
     }
 
     public void notifySmasherKilled(Smasher smasher)
@@ -125,7 +111,7 @@ public class GameSession {
         synchronized (players)
         {
             int indexOf = smashers.indexOf(smasher);
-            if(indexOf < numberOfPlayerInGame/2) aIndex++;
+            if(indexOf < numberOfPlayerInGame) aIndex++;
             else bIndex++;
         }
         indexLock.unlock();
@@ -173,7 +159,7 @@ public class GameSession {
                             Smasher smasherTeamB = smashers.get(bIndex);
                             Double healthPointsTeamA = smasherTeamA.getHealthPoints();
                             Double healthPointsTeamB = smasherTeamB.getHealthPoints();
-                            BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null));
+                            startRoundResp.setFirstTeam(BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null)));
                             startRoundResp.setDamageTeamsA(healthPointsTeamA - smasherTeamA.getHealthPoints());
                             startRoundResp.setDamageTeamsB(healthPointsTeamB - smasherTeamB.getHealthPoints());
                             if (smasherTeamA.getHealthPoints() <= 0) {

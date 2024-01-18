@@ -74,7 +74,8 @@ public class Server {
                     output.writeObject(new LogInResp(false, null));
                     System.out.println("Problem with executing sql statement");
                     socket.close();
-                    throw new Exception(e);
+                    e.printStackTrace();
+//                    throw new Exception(e);
                 }
             }
             else if(obj instanceof RegisterReq)
