@@ -424,14 +424,6 @@ public class ArenaController {
             arenaConsole.appendText(text);
 
             if(userSmasher == smasher1){
-                try {
-                    input.readObject();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-
                 showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
             }
         }else{
@@ -461,8 +453,6 @@ public class ArenaController {
         if (startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
             String text = userName2text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
             arenaConsole.appendText(text);
-
-
 
             if(userSmasher == smasher2){
                 showGameOverDialog("Przegrana gracza " + player2 ,"Wygrywa gracz: " + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
