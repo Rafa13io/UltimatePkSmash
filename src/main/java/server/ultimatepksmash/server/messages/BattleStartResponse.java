@@ -12,6 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class BattleStartResponse implements Serializable  {
-    private List<Smasher> smashers = new ArrayList<>();
-    private List<String>  playersNames = new ArrayList<>();
+    private List<Smasher> smashers = new ArrayList<>();  //0 PLAYER A ,1 PLAYER B
+    private List<String>  playersNames = new ArrayList<>(); //0 PLAYER A ,1 PLAYER B
 }

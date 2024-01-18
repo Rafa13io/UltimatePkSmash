@@ -10,7 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class StartRoundResp implements Serializable {//end round resp
     Double damageTeamsA;
-    Double damageTeamsB ;
+    Double damageTeamsB;
     boolean wasAttackFatalForTeamA = false;
     boolean wasAttackFatalForTeamB = false;
     private Long idAttackTeamA = null;
@@ -18,4 +18,5 @@ public class StartRoundResp implements Serializable {//end round resp
     private Long idDefenceTeamA = null;
     private Long idDefenceTeamB = null;
     boolean isNextRoundPossible = true;
+    char firstTeam; // A albo B
 }

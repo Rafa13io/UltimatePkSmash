@@ -1,22 +1,17 @@
 package cllient.ultimatepksmash.gui.arena;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
-import javafx.util.Duration;
+import javafx.stage.Modality;
 import server.ultimatepksmash.server.database.skills.Type;
 import server.ultimatepksmash.server.database.skills.attack.Attack;
 import server.ultimatepksmash.server.database.skills.defence.Defence;
 import server.ultimatepksmash.server.database.smasher.Smasher;
+import server.ultimatepksmash.server.messages.StartRoundReq;
+import server.ultimatepksmash.server.messages.StartRoundResp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,15 +74,12 @@ public class ArenaController {
     private Label attack1Type;
     @FXML
     private Button submitButton;
-    private Attack chosenAttack;
-    private Defence chosenDefence;
-
+    private Long chosenAttackId;
+    private Long chosenDefenceId;
     @FXML
-    private Label timerLabel;  // Add a Label for the timer
+    private Button test;
 
-    private Timeline timerTimeline;
-    private int countdownSeconds = 60;
-
+    private boolean teamA = false;
     private boolean decisionSubmitted = false;
     public ArenaController() {
         // Konstruktor bezargumentowy
@@ -111,7 +103,7 @@ public class ArenaController {
         progressBar1.setStyle("-fx-accent: #00ff00");
         smasher1Name.setText(smasher1.getName());
         // statycczna utrata hp
-        currentHP1 = smasher1.getHealthPoints() - 80;
+        currentHP1 = smasher1.getHealthPoints();
 
 
         currentHP2 = smasher2.getHealthPoints();
@@ -136,49 +128,10 @@ public class ArenaController {
         attack1Type.setText("Typ: " + smasher1.getAttacks().get(0).getType().toString());
 
         attackButton1.setText(smasher1.getAttacks().get(0).getName());
-        submitButton.setOnAction(event -> submitDecision(chosenAttack,chosenDefence));
-
-        initializeTimer();
-        startTimer();
+        submitButton.setOnAction(event -> submitDecision(chosenAttackId, chosenDefenceId));
+        arenaConsole.setEditable(false);
     }
 
-    private void initializeTimer() {
-        timerTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), this::updateTimer)
-        );
-        timerTimeline.setCycleCount(Timeline.INDEFINITE);
-    }
-    private void startTimer() {
-        timerTimeline.play();
-    }
-
-    private void stopTimer() {
-        timerTimeline.stop();
-    }
-
-    private void updateTimer(ActionEvent event) {
-        if (countdownSeconds > 0) {
-            countdownSeconds--;
-            updateTimerLabel();
-        } else {
-            // Timer reached zero, stop the timer and perform actions accordingly
-            stopTimer();
-            handleTimerEnd();  // Add your logic for timer expiration
-        }
-    }
-
-    private void updateTimerLabel() {
-        timerLabel.setText(String.valueOf(countdownSeconds));
-    }
-
-    // ... (existing methods)
-
-    // Add your logic for timer expiration here
-    private void handleTimerEnd() {
-        // Example: Display a message or perform an action when the timer reaches zero
-        arenaConsole.appendText("Time's up! Round ended.\n");
-        // Add any additional actions you want to perform at the end of the timer
-    }
 
     @FXML
     public void handleAttackButton1() {
@@ -196,11 +149,10 @@ public class ArenaController {
         } else {
             attackButton1.setStyle(""); // Resetowanie stylu do domyślnego
         }
-        chosenAttack = smasher1.getAttacks().get(0);
-        String smasherName = smasher1.getName();
+        chosenAttackId = smasher1.getAttacks().get(0).getId();
 
+        String smasherName = smasher1.getName();
         String logMessage = "Smasher " + smasherName + " użył ataku : " + smasher1.getAttacks().get(0).getName() +", zadając " + smasher1.getAttacks().get(0).getAttackPoints().toString() + " obrażeń.\n";
-        // Tu umieść kod obsługujący naciśnięcie guzika
         arenaConsole.appendText(logMessage);
         System.out.println(logMessage);
     }
@@ -222,8 +174,8 @@ public class ArenaController {
             attackButton2.setStyle(""); // Resetowanie stylu do domyślnego
         }
 
-
-        String smasherName = smasher1.getName();
+        chosenAttackId = smasher2.getAttacks().get(1).getId();
+        String smasherName = smasher2.getName();
 
         String logMessage = "Smasher " + smasherName + " użył ataku : "  +", zadając " + " obrażeń.\n";
         // Tu umieść kod obsługujący naciśnięcie guzika
@@ -247,7 +199,7 @@ public class ArenaController {
         } else {
             attackButton3.setStyle(""); // Resetowanie stylu do domyślnego
         }
-
+        chosenAttackId = smasher1.getAttacks().get(2).getId();
         //TODO zczytać dane z attaku ale smasher jeszcze nie ma ataków
 
         String smasherName = smasher1.getName();
@@ -270,7 +222,7 @@ public class ArenaController {
             defenceButton1.setStyle(""); // Resetowanie stylu do domyślnego
         }
 
-        chosenDefence = smasher1.getDefences().get(0);
+        chosenDefenceId = smasher1.getDefences().get(0).getId();
 
         String smasherName = smasher1.getName();
 
@@ -293,7 +245,7 @@ public class ArenaController {
         }
 
         //TODO zczytać dane z attaku ale smasher jeszcze nie ma ataków
-
+        chosenDefenceId = smasher1.getDefences().get(1).getId();
         String smasherName = smasher1.getName();
 
         String logMessage = "Smasher " + smasherName + " użył obrony 1 : " + ", broniąc " + " obrażeń.\n";
@@ -314,37 +266,111 @@ public class ArenaController {
         hpLabel.setText(hpText);
     }
 
-    public String submitDecision(Attack attack, Defence defence){
+    public StartRoundReq submitDecision(Long attack, Long defence){
         if (!decisionSubmitted) {
-            String atk = attack.getAttackPoints().toString();
-            String def = defence.getDefencePoints().toString();
-            System.out.println(atk + " " + def);
+            StartRoundReq startRoundReq = new StartRoundReq(attack,defence);
+            System.out.println(attack + " " + defence);
 
-            stopTimer();  // Stop the timer when a decision is submitted
-
+            setButtonsDisabled();
             decisionSubmitted = true;
 
-            // Dezaktywuj przyciski
-            setButtonDisabledStyle(attackButton1);
-            setButtonDisabledStyle(attackButton2);
-            setButtonDisabledStyle(attackButton3);
-            setButtonDisabledStyle(defenceButton1);
-            setButtonDisabledStyle(defenceButton2);
-
-            return (atk + " " + def);
+            return startRoundReq;
         } else {
             // Możesz obsłużyć sytuację, gdy decyzja została już wcześniej wysłana
             System.out.println("Decyzja już wysłana.");
+            arenaConsole.appendText("Decyzja już wysłana.");
             return null;
         }
+    }
+    public void handleServerResponse(){
+        StartRoundResp startRoundResp = new StartRoundResp(10D,10D,false,false,1L,1L,1L,1L,true,'A');
+        char firstTeam = startRoundResp.getFirstTeam();
+
+        if( firstTeam == 'A'){
+            updateTeam2(startRoundResp);
+            if(startRoundResp.isNextRoundPossible()){
+                updateTeam1(startRoundResp);
+            }
+        }else{
+            updateTeam1(startRoundResp);
+            if(startRoundResp.isNextRoundPossible()){
+                updateTeam2(startRoundResp);
+            }
+        }
+
+        resetButtonStyles();
+        decisionSubmitted =false;
+    }
+    public void updateTeam1(StartRoundResp startRoundResp){
+        double damageTaken = startRoundResp.getDamageTeamsA();
+        currentHP1 = currentHP1 - damageTaken;
+        String enemyAtack ="Nazwa Usera Smasher " + smasher2.getName() + "Zadaje " + damageTaken + " Obrażeń";
+
+        arenaConsole.appendText(enemyAtack + "\n");
+
+        updateHP(progressBar1,hp1,currentHP1,smasher1.getHealthPoints());
+
+        if (startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
+            String text = " Nazwa Usera: Smasher " + smasher1.getName() + " zostaje pokonany" + "\n";
+            arenaConsole.appendText(text);
+            showGameOverDialog("Przegrana ","Nazwa Usera: Smasher " + smasher1.getName() + " zostaje pokonany" + "\n" );
+        };
+    }
+
+    public void updateTeam2(StartRoundResp startRoundResp){
+        double damageTaken = startRoundResp.getDamageTeamsB();
+        currentHP2 = currentHP2 - damageTaken;
+        String enemyAtack ="Nazwa Usera Smasher " + smasher1.getName() + "Zadaje " + damageTaken + " Obrażeń";
+
+        arenaConsole.appendText(enemyAtack + "\n" );
+
+        updateHP(progressBar2,hp2,currentHP2,smasher2.getHealthPoints());
+
+        if (startRoundResp.isWasAttackFatalForTeamA() || currentHP2 <= 0){
+            String text = " Nazwa Usera: Smasher " + smasher2.getName() + " zostaje pokonany " + "\n" ;
+            arenaConsole.appendText(text);
+            showGameOverDialog("Przegrana ","Nazwa Usera: Smasher " + smasher2.getName() + " zostaje pokonany" + "\n");
+        };
+    }
+    private void showGameOverDialog(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // Tutaj możesz dodać kod obsługujący zamknięcie gry lub inne akcje
+                System.exit(0); // Przykładowe zamknięcie aplikacji po wciśnięciu OK
+            }
+        });
+    }
+    private void setButtonsDisabled(){
+        setButtonDisabledStyle(attackButton1);
+        setButtonDisabledStyle(attackButton2);
+        setButtonDisabledStyle(attackButton3);
+        setButtonDisabledStyle(defenceButton1);
+        setButtonDisabledStyle(defenceButton2);
+    }
+    private void resetButtonStyles() {
+        setButtonDefaultStyle(attackButton1);
+        setButtonDefaultStyle(attackButton2);
+        setButtonDefaultStyle(attackButton3);
+        setButtonDefaultStyle(defenceButton1);
+        setButtonDefaultStyle(defenceButton2);
+    }
+    private void setButtonDefaultStyle(Button button) {
+        button.setDisable(false);
+        button.setStyle("");
+    }
+
+    private void setButtonSuccessStyle(Button button) {
+        button.setStyle("-fx-background-color: #00ff00; -fx-text-fill: #000000; -fx-border-color: #000000; -fx-border-width: 2px; -fx-border-radius: 2px");
     }
     private void setButtonDisabledStyle(Button button) {
         button.setDisable(true);
         button.setStyle("-fx-opacity: 0.5;"); // Możesz dostosować styl do swoich preferencji
-    }
-    public void executeRound(int hp){
-        currentHP2 = currentHP2 - hp;
-        updateHP(progressBar2,hp2,currentHP2,smasher2.getHealthPoints());
     }
 
 

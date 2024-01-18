@@ -14,7 +14,7 @@ import java.net.Socket;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("welcome-page-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("arena-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 550);
         stage.setTitle("Hello!");
         stage.setScene(scene);
