@@ -41,9 +41,15 @@ public class UserService {
         
         ResultSet resultSet = getUser.executeQuery();
         
-        resultSet.next(); // move to the returned row
         User user = new User();
-        mapUser(user, resultSet);
+        try {
+            resultSet.next(); // move to the returned row
+            mapUser(user, resultSet);
+        }
+        catch (SQLException e) {
+            throw new SQLException("error getiign a user (query probably returned no rows)");
+        }
+        
 
         if (resultSet.next()) {
             throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
@@ -62,8 +68,11 @@ public class UserService {
     public void addUser(User user) throws SQLException {
         List<String> usernames;
         usernames = getUsers().stream().map(User::getUsername).collect(Collectors.toList());
-        if(usernames.contains(user.getUsername())) {
+        if (usernames.contains(user.getUsername())) {
             throw new RuntimeException("username not available");
+        }
+        if (user.getUsername().isEmpty() || user.getPassword().isEmpty() || user.getEmail().isEmpty()) {
+            throw new RuntimeException("empty field in form");
         }
 
         PreparedStatement addUser = connection.prepareStatement(
@@ -90,11 +99,11 @@ public class UserService {
         try {
             addSmasherToUser.executeUpdate();
         }
-catch (Exception e)
-{
-int a;
-System.out.println("");
-}
+        catch (Exception e)
+        {
+            int a;
+            System.out.println("");
+        }
         addSmasherToUser.close();
     }
     

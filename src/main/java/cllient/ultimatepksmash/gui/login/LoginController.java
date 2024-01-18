@@ -1,16 +1,26 @@
 package cllient.ultimatepksmash.gui.login;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import lombok.Getter;
+import server.ultimatepksmash.server.messages.LogInReq;
+import server.ultimatepksmash.server.messages.LogInResp;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
+
+@Getter
 public class LoginController {
 
     @FXML
@@ -20,25 +30,72 @@ public class LoginController {
     private Button loginButton;
 
     @FXML
+    private Label error;
+    
+    @FXML
     private TextField password;
 
     @FXML
     private TextField username;
+    
+    private Socket socket;
 
     @FXML
     void goBack(MouseEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/welcome-page-view.fxml"));
-        Parent root = loader.load();
-
-        WelcomePageController welcomePageController = loader.getController();
-
-        Scene nowaScena = new Scene(root);
-        Stage stage = (Stage) backButton.getScene().getWindow();
-        stage.setScene(nowaScena);
+        Platform.runLater(() -> {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/welcome-page-view.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            
+            Scene nowaScena = new Scene(root);
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setScene(nowaScena);
+        });
     }
+    
     @FXML
-    void login(MouseEvent event) {
-
+    void login(MouseEvent event) throws IOException {
+        //w nowym watku otworzyc socket i wyslac login request
+        new Thread(() -> {
+            try {
+                // Establish a socket connection
+                socket = new Socket("localhost", 25800);
+                
+                // Create object output and input streams
+                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                
+                // Create a RegisterReq object and send it
+                LogInReq logInReq = new LogInReq(username.getText(), password.getText());
+                System.out.println("sending login request: " + logInReq);
+                outputStream.writeObject(logInReq);
+                
+                // Receive and handle the RegisterResp
+                LogInResp logInResp = (LogInResp) inputStream.readObject();
+                System.out.println(logInResp);
+                
+                if (logInResp.isSuccess()) {
+                    goBack(null);
+                }
+                else {
+                    Platform.runLater(() -> {
+                        error.setText("error while logging in");
+                        error.setVisible(true);
+                    });
+                }
+                
+                // Close streams
+                outputStream.close();
+                inputStream.close();
+                socket.close(); //todo: pass further after log in
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
-
 }
