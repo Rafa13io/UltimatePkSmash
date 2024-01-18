@@ -386,7 +386,16 @@ public class ArenaController {
                         arenaConsole.appendText(text);
 
                         if(userSmasher == smasher2){
-                            showGameOverDialog("Wygyrwa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                            BattleWonMessage battleWonMessage;
+                            try {
+                                battleWonMessage = (BattleWonMessage) input.readObject();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                            showGameOverDialog("Wygrywa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage  );
                         }
                     }
                 }
