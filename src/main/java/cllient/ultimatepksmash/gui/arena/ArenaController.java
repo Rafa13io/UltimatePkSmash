@@ -1,5 +1,6 @@
 package cllient.ultimatepksmash.gui.arena;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -9,6 +10,7 @@ import javafx.stage.Modality;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.messages.BattleStartResponse;
+import server.ultimatepksmash.server.messages.BattleWonMessage;
 import server.ultimatepksmash.server.messages.StartRoundReq;
 import server.ultimatepksmash.server.messages.StartRoundResp;
 
@@ -290,21 +292,26 @@ public class ArenaController {
 
     public void submitDecision(Long attack, Long defence) {
         if (!decisionSubmitted) {
-            try {
-                System.out.println(attack + " " + defence);
+            System.out.println(attack + " " + defence);
 
-                setButtonsDisabled();
-                decisionSubmitted = true;
+            setButtonsDisabled();
+            decisionSubmitted = true;
 
-                output.writeObject(new StartRoundReq(attack,defence));
-                StartRoundResp startRoundResp = (StartRoundResp) input.readObject();
-                handleServerResponse(startRoundResp);
 
-            }catch (IOException ioException){
-                ioException.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            new Thread(() -> {
+                try {
+                    output.writeObject(new StartRoundReq(attack,defence));
+                    StartRoundResp startRoundResp = (StartRoundResp) input.readObject();
+
+                    Platform.runLater(() -> {
+                        handleServerResponse(startRoundResp);
+                    });
+
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
 
         } else {
             // Możesz obsłużyć sytuację, gdy decyzja została już wcześniej wysłana
@@ -320,11 +327,69 @@ public class ArenaController {
             updateTeam2(startRoundResp);
             if(startRoundResp.isNextRoundPossible()){
                 updateTeam1(startRoundResp);
+            }else{
+                String player1 = userName1text;
+                String player2 = userName2text;
+                if (startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
+                    String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
+                    arenaConsole.appendText(text);
+
+                    if(userSmasher == smasher1){
+                        showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                    }
+                }else{
+                    if(startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
+                        String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
+                        arenaConsole.appendText(text);
+
+                        if(userSmasher == smasher1){
+                            BattleWonMessage battleWonMessage;
+                            try {
+                                battleWonMessage = (BattleWonMessage) input.readObject();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                            showGameOverDialog("Wygrywa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage  );
+                        }
+                    }
+                }
             }
         }else{
             updateTeam1(startRoundResp);
             if(startRoundResp.isNextRoundPossible()){
                 updateTeam2(startRoundResp);
+            }else{
+                String player1 = userName1text;
+                String player2 = userName2text;
+
+                if (startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
+                    String text = userName2text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
+                    arenaConsole.appendText(text);
+
+                    if(userSmasher == smasher2){
+                        try {
+                            input.readObject();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        showGameOverDialog("Przegrana gracza " + player2 ,"Wygrywa gracz: " + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                    }
+
+                }else{
+                    if(startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
+                        String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
+                        arenaConsole.appendText(text);
+
+                        if(userSmasher == smasher2){
+                            showGameOverDialog("Wygyrwa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                        }
+                    }
+                }
             }
         }
 
@@ -348,6 +413,13 @@ public class ArenaController {
             arenaConsole.appendText(text);
 
             if(userSmasher == smasher1){
+                try {
+                    input.readObject();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
                 showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
             }
         }else{
@@ -375,7 +447,7 @@ public class ArenaController {
         String player2 = userName2text;
 
         if (startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
-            String text = userName1text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
+            String text = userName2text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
             arenaConsole.appendText(text);
 
             if(userSmasher == smasher2){
@@ -383,12 +455,12 @@ public class ArenaController {
             }
 
         }else{
-            if(startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
+            if(startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
                 String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
                 arenaConsole.appendText(text);
 
-                if(userSmasher == smasher1){
-                    showGameOverDialog("Wygyrwa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                if(userSmasher == smasher2){
+                    showGameOverDialog("Wygyrwa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
                 }
             }
         }
