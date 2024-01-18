@@ -11,15 +11,11 @@ public class Main {
         try {
             connectToDatabase();
             Server server = new Server(25800);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-         closeConnection();
+        } catch (IOException | ClassNotFoundException | SQLException e) {
+//            throw new RuntimeException(e);
+            e.printStackTrace();
+        } finally {
+            closeConnection();
         }
     }
 }
