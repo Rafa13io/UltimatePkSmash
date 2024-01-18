@@ -7,9 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ServerTest {
-
-
+public class ServerTEst2 {
     public static void main(String[] args) throws IOException {
         TestServer();
     }
@@ -22,39 +20,42 @@ public class ServerTest {
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             System.out.println("Sending Init request");
-            output.writeObject(new LogInReq("rafalo", "123"));
+            System.out.println("Sending Init request");
+            output.writeObject(new LogInReq("kuba", "123"));
 
             LogInResp logInResp = (LogInResp) input.readObject();
             System.out.println("Login status:" + logInResp.isSuccess() + " " + logInResp.getUser());
-            output.writeObject(new BattleStart1v1Req(1L));
+            output.writeObject(new BattleStart1v1Req(2L));
             BattleStartResponse battleStart1v1Response = (BattleStartResponse) input.readObject();
             System.out.println(battleStart1v1Response);
+
             //1
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             StartRoundResp startRoundResp = (StartRoundResp) input.readObject();
+
             //2
-            output.writeObject(new StartRoundReq(1L, 1L));
-             startRoundResp = (StartRoundResp) input.readObject();
+            output.writeObject(new StartRoundReq(4L, 3L));
+            startRoundResp = (StartRoundResp) input.readObject();
             //3
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
             //4
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
             //5
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
             //6
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
             //7
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
             //8
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
             //9
-            output.writeObject(new StartRoundReq(1L, 1L));
+            output.writeObject(new StartRoundReq(4L, 3L));
             startRoundResp = (StartRoundResp) input.readObject();
 
             Object result = (Object)  input.readObject();
@@ -67,8 +68,13 @@ public class ServerTest {
                 BattleLostMessage battleLostMessage = (BattleLostMessage) result;
                 System.out.println("LOSTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
             }
+
             output.writeObject(new LogOutReq());
             socket.close();//after successful login socket should be kept open
+
+
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

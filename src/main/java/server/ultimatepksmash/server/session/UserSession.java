@@ -6,8 +6,7 @@ import server.ultimatepksmash.server.database.smasher.SmasherService;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.gamesmanager.GameSession;
 import server.ultimatepksmash.server.gamesmanager.GamesManager;
-import server.ultimatepksmash.server.messages.BattleStart1v1Req;
-import server.ultimatepksmash.server.messages.LogOutReq;
+import server.ultimatepksmash.server.messages.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,8 +47,7 @@ public class UserSession implements Callable<SessionEndStatus> {
             {
                 throw new  UnsupportedOperationException("Not implemented yet");
             }
-
-            System.out.println("Unexpected message received");
+            System.out.println("User went back to the lobby");
             //throw new  UnsupportedOperationException("Not implemented yet");
         }
     }
@@ -63,6 +61,25 @@ public class UserSession implements Callable<SessionEndStatus> {
         GameSession gameSession = GamesManager.joinGameSession1v1(user, mySmasher);
         System.out.println("User " + user.getUsername() +" have joined game session");
         output.writeObject(gameSession.getBattleStartResponse());
+
+        while(gameSession.checkIfTheGameIsStillOn())
+        {
+            StartRoundReq req =  (StartRoundReq) input.readObject();
+            System.out.println("Server received StartRoundReq from user: "+user.getUsername() );
+            StartRoundResp resp = gameSession.executeRequest(user, req);
+            output.writeObject(resp);
+            System.out.println("Server sent StartRoundResp for user: "+user.getUsername() );
+        }
+
+        if(gameSession.isUserAWinner(user))
+        {
+           // if(user)
+            output.writeObject(new BattleWonMessage(gameSession.getWonSmasher()));
+        }
+        else {
+            output.writeObject(new BattleLostMessage());
+        }
+
     }
     private void logReq(Object req)
     {
