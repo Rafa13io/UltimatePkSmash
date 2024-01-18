@@ -1,18 +1,20 @@
 package cllient.ultimatepksmash.gui.arena;
 
+import cllient.ultimatepksmash.gui.menu.MenuController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Scale;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
-import server.ultimatepksmash.server.messages.BattleStartResponse;
-import server.ultimatepksmash.server.messages.BattleWonMessage;
-import server.ultimatepksmash.server.messages.StartRoundReq;
-import server.ultimatepksmash.server.messages.StartRoundResp;
+import server.ultimatepksmash.server.messages.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -90,11 +92,14 @@ public class ArenaController {
     private String userName2text;
     @FXML
     private Label userName2 ;
+    
+    private User user;
 
     public ArenaController(BattleStartResponse battleStartResponse, User user, Socket socket, ObjectInputStream in, ObjectOutputStream out){
         this.output = out;
         this.input = in;
         this.socket = socket;
+        this.user = user;
 
         if(Objects.equals(user.getUsername(), battleStartResponse.getPlayersNames().get(0))){
             teamA =true;
@@ -335,6 +340,13 @@ public class ArenaController {
                     arenaConsole.appendText(text);
 
                     if(userSmasher == smasher1){
+                        try {
+                            input.readObject();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
                         updateHP(progressBar1,hp1,0,smasher1.getHealthPoints());
                         showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + smasher1.getName() + " zostaje pokonany" );
                     }
@@ -483,9 +495,29 @@ public class ArenaController {
             if (response == ButtonType.OK) {
                 // Tutaj możesz dodać kod obsługujący zamknięcie gry lub inne akcje
 //                System.exit(0); // Przykładowe zamknięcie aplikacji po wciśnięciu OK
+                goToMenuPage();
             }
         });
     }
+    
+    public void goToMenuPage()
+    {
+//        Platform.runLater(() -> {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/menu-view.fxml"));
+            loader.setController(new MenuController(socket, output, input, this.user));
+            Parent destination = null;
+            try {
+                destination = loader.load();
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Scene scene = new Scene(destination);
+            Stage stage = (Stage) attackButton1.getScene().getWindow();
+            stage.setScene(scene);
+//        });
+    }
+    
     private void setButtonsDisabled(){
         setButtonDisabledStyle(attackButton1);
         setButtonDisabledStyle(attackButton2);
