@@ -7,6 +7,7 @@ import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.gamesmanager.GameSession;
 import server.ultimatepksmash.server.gamesmanager.GamesManager;
 import server.ultimatepksmash.server.messages.BattleStart1v1Req;
+import server.ultimatepksmash.server.messages.BattleStart1v1Response;
 import server.ultimatepksmash.server.messages.LogOutReq;
 
 import java.io.IOException;
