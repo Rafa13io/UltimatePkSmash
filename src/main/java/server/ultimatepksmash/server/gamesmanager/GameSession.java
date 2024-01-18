@@ -78,22 +78,35 @@ public class GameSession {
         }
         waitForOtherPlayers();
     }
+    ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    Lock read  = readWriteLock.readLock();
+    Lock write = readWriteLock.writeLock();
     protected void waitForOtherPlayers()
     {
         numberOfPlayersReadyWriteLock.lock();
         numberOfPlayersReady++;
         if(numberOfPlayerInGame != numberOfPlayersReady)
         {
+            read.lock();
             while (numberOfPlayerInGame != numberOfPlayersReady) {
                 numberOfPlayersReadyWriteLock.unlock();
                 numberOfPlayersReadyWriteLock.lock();
             }
+            numberOfPlayersReadyWriteLock.unlock();
+            read.unlock();
+            write.lock();
+            System.out.println("numberOfPlayersReady:   "+numberOfPlayersReady);
             if(numberOfPlayersReady == numberOfPlayerInGame) numberOfPlayersReady = 0;
+            write.unlock();
         }
-        numberOfPlayersReadyWriteLock.unlock();
+        else
+        {
+            numberOfPlayersReadyWriteLock.unlock();
+        }
+
     }
 
-    public void isUserPlaying(User user)
+    public boolean isUserPlaying(User user)
     {
         boolean result = false;
         indexLock.lock();
@@ -103,6 +116,7 @@ public class GameSession {
             result = indexOf == aIndex || indexOf == bIndex;
         }
         indexLock.unlock();
+        return result;
     }
 
     public void notifySmasherKilled(Smasher smasher)
@@ -111,7 +125,7 @@ public class GameSession {
         synchronized (players)
         {
             int indexOf = smashers.indexOf(smasher);
-            if(indexOf < numberOfPlayerInGame) aIndex++;
+            if(indexOf < numberOfPlayerInGame/2) aIndex++;
             else bIndex++;
         }
         indexLock.unlock();
@@ -126,66 +140,67 @@ public class GameSession {
         return result;
     }
     public StartRoundResp executeRequest(User user, StartRoundReq req) throws SQLException {
-        numberOfPlayersReadyRaadLock.lock();
-        if(numberOfPlayersReady == 0)
-        {
-            startRoundResp = new StartRoundResp();
-        }
-        synchronized (players) {
-            int userIndex = players.indexOf(user);
-            Smasher userSmasher;
-            synchronized (smashers) {
-                userSmasher = smashers.get(userIndex);
+        try {
+            numberOfPlayersReadyRaadLock.lock();
+            if (numberOfPlayersReady == 0) {
+                startRoundResp = new StartRoundResp();
             }
+            synchronized (players) {
+                int userIndex = players.indexOf(user);
+                Smasher userSmasher;
+                synchronized (smashers) {
+                    userSmasher = smashers.get(userIndex);
+                }
 
-            synchronized (startRoundResp) {
-            if (players.get(aIndex).getId().equals(user.getId())) {
-                //Team A
-             startRoundResp.setIdAttackTeamA(req.getIdAttack());
-             startRoundResp.setIdDefenceTeamA(req.getIdDefence());
-            } else {
+                synchronized (startRoundResp) {
+                    if (players.get(aIndex).getId().equals(user.getId())) {
+                        //Team A
+                        startRoundResp.setIdAttackTeamA(req.getIdAttack());
+                        startRoundResp.setIdDefenceTeamA(req.getIdDefence());
+                    } else {
 
-                startRoundResp.setIdAttackTeamB(req.getIdAttack());
-                startRoundResp.setIdDefenceTeamB(req.getIdDefence());
+                        startRoundResp.setIdAttackTeamB(req.getIdAttack());
+                        startRoundResp.setIdDefenceTeamB(req.getIdDefence());
 
-            }
-            if(startRoundResp.getIdAttackTeamA() != null &&
-                startRoundResp.getIdAttackTeamB() != null &&
-                startRoundResp.getIdDefenceTeamA() != null &&
-                startRoundResp.getIdDefenceTeamB() != null
-                )
-                {
-                    synchronized (smashers)
-                    {
-                        Smasher smasherTeamA = smashers.get(aIndex);
-                        Smasher smasherTeamB = smashers.get(bIndex);
-                        Double healthPointsTeamA = smasherTeamA.getHealthPoints();
-                        Double healthPointsTeamB = smasherTeamB.getHealthPoints();
-                        BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null));
-                        startRoundResp.setDamageTeamsA(healthPointsTeamA - smasherTeamA.getHealthPoints());
-                        startRoundResp.setDamageTeamsB(healthPointsTeamB - smasherTeamB.getHealthPoints());
-                        if(smasherTeamA.getHealthPoints() <= 0)
-                        {
-                            startRoundResp.setWasAttackFatalForTeamA(true);
-                            notifySmasherKilled(smasherTeamA);
-                        }
-                        if(smasherTeamB.getHealthPoints() <= 0) {
-                            startRoundResp.setWasAttackFatalForTeamA(true);
-                            notifySmasherKilled(smasherTeamB);
+                    }
+                    if (startRoundResp.getIdAttackTeamA() != null &&
+                            startRoundResp.getIdAttackTeamB() != null &&
+                            startRoundResp.getIdDefenceTeamA() != null &&
+                            startRoundResp.getIdDefenceTeamB() != null
+                    ) {
+                        synchronized (smashers) {
+                            Smasher smasherTeamA = smashers.get(aIndex);
+                            Smasher smasherTeamB = smashers.get(bIndex);
+                            Double healthPointsTeamA = smasherTeamA.getHealthPoints();
+                            Double healthPointsTeamB = smasherTeamB.getHealthPoints();
+                            BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null));
+                            startRoundResp.setDamageTeamsA(healthPointsTeamA - smasherTeamA.getHealthPoints());
+                            startRoundResp.setDamageTeamsB(healthPointsTeamB - smasherTeamB.getHealthPoints());
+                            if (smasherTeamA.getHealthPoints() <= 0) {
+                                startRoundResp.setWasAttackFatalForTeamA(true);
+                                notifySmasherKilled(smasherTeamA);
+                            }
+                            if (smasherTeamB.getHealthPoints() <= 0) {
+                                startRoundResp.setWasAttackFatalForTeamB(true);
+                                notifySmasherKilled(smasherTeamB);
 
-                        }
-                        if(!checkIfTheGameIsStillOn())
-                        {
-                            startRoundResp.setNextRoundPossible(false);
-                            drawSmasher();
-                            winners = startRoundResp.isWasAttackFatalForTeamB() ? 'A' : 'B';
+                            }
+                            if (!checkIfTheGameIsStillOn()) {
+                                startRoundResp.setNextRoundPossible(false);
+                                drawSmasher();
+                                winners = startRoundResp.isWasAttackFatalForTeamB() ? 'A' : 'B';
+                            }
                         }
                     }
                 }
             }
+            numberOfPlayersReadyRaadLock.unlock();
+            waitForOtherPlayers();
         }
-        numberOfPlayersReadyRaadLock.unlock();
-        waitForOtherPlayers();
+        catch (Exception e)
+        {
+            System.out.println("12");
+        }
         return startRoundResp;
     }
     public void drawSmasher() throws SQLException {
@@ -197,7 +212,12 @@ public class GameSession {
         wonSmasher = allSmashers.get(n);
     }
 
-    public StartRoundResp spyRequests(User user, StartRoundReq req) {
+    public StartRoundResp spyRequests() {
+        numberOfPlayersReadyRaadLock.lock();
+        if (numberOfPlayersReady == 0) {
+            startRoundResp = new StartRoundResp();
+        }
+        numberOfPlayersReadyRaadLock.unlock();
         waitForOtherPlayers();
         return startRoundResp;
     }
