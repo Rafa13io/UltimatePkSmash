@@ -67,8 +67,7 @@ public class GameSession {
 
         return battleStart1v1Response;
     }
-    protected void addPlayerAndWaitForOthersToJoin(User user, Smasher smasher)
-    {
+    protected void addPlayerAndWaitForOthersToJoin(User user, Smasher smasher) {
         synchronized (players)
         {
            players.add(user);
@@ -81,8 +80,7 @@ public class GameSession {
     ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     Lock read  = readWriteLock.readLock();
     Lock write = readWriteLock.writeLock();
-    protected void waitForOtherPlayers()
-    {
+    protected void waitForOtherPlayers() {
         numberOfPlayersReadyWriteLock.lock();
         numberOfPlayersReady++;
         if(numberOfPlayerInGame != numberOfPlayersReady)
@@ -90,12 +88,18 @@ public class GameSession {
             read.lock();
             while (numberOfPlayerInGame != numberOfPlayersReady) {
                 numberOfPlayersReadyWriteLock.unlock();
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
                 numberOfPlayersReadyWriteLock.lock();
             }
             numberOfPlayersReadyWriteLock.unlock();
             read.unlock();
             write.lock();
-            System.out.println("numberOfPlayersReady:   "+numberOfPlayersReady);
+            System.out.println("numberOfPlayersReady:  "+numberOfPlayersReady);
             if(numberOfPlayersReady == numberOfPlayerInGame) numberOfPlayersReady = 0;
             write.unlock();
         }
@@ -172,7 +176,14 @@ public class GameSession {
                             Smasher smasherTeamB = smashers.get(bIndex);
                             Double healthPointsTeamA = smasherTeamA.getHealthPoints();
                             Double healthPointsTeamB = smasherTeamB.getHealthPoints();
-                            startRoundResp.setFirstTeam(BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null)));
+                            startRoundResp.setFirstTeam(BattleField.battle(
+                                    smasherTeamA,
+                                    smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null),
+                                    smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null),
+                                    smasherTeamB,
+                                    smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null),
+                                    smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null))
+                            );
                             startRoundResp.setDamageTeamsA(healthPointsTeamA - smasherTeamA.getHealthPoints());
                             startRoundResp.setDamageTeamsB(healthPointsTeamB - smasherTeamB.getHealthPoints());
                             if (smasherTeamA.getHealthPoints() <= 0) {
@@ -182,7 +193,6 @@ public class GameSession {
                             if (smasherTeamB.getHealthPoints() <= 0) {
                                 startRoundResp.setWasAttackFatalForTeamB(true);
                                 notifySmasherKilled(smasherTeamB);
-
                             }
                             if (!checkIfTheGameIsStillOn()) {
                                 startRoundResp.setNextRoundPossible(false);
