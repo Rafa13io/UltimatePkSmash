@@ -83,7 +83,18 @@ public class MenuController {
 
     @FXML
     void onShowResult(MouseEvent event) {
-
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/results1vs1.fxml"));
+        loader.setController(new Results1vs1Controller(socket, outputStream, inputStream, user));
+        Parent destination = null;
+        try {
+            destination = loader.load();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Scene scene = new Scene(destination);
+        Stage stage = (Stage) smashersDropBox.getScene().getWindow();
+        stage.setScene(scene);
     }
 
     @FXML
