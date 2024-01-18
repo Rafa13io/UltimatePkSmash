@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.session;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.results.ResultService;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.smasher.SmasherService;
 import server.ultimatepksmash.server.database.user.User;
@@ -48,6 +49,11 @@ public class UserSession implements Callable<SessionEndStatus> {
             else if(req instanceof BattleStart2v2Req)
             {
                 battle2v2Chosen((BattleStart2v2Req) req);
+            }
+            else if(req instanceof Get1v1ResultsReq)
+            {
+                ResultService resultService = new ResultService();
+                output.writeObject(new Get1v1ResultsResp(resultService.getResults1vs1()));
             }
             else
             {

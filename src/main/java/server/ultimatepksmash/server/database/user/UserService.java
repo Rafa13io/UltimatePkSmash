@@ -32,7 +32,26 @@ public class UserService {
         getUsers.close();
         return users;
     }
-    
+
+    public User getUser(Long id) throws SQLException {
+        String sql = "SELECT * FROM p_user WHERE id = ?";
+        PreparedStatement getUser = connection.prepareStatement(sql);
+        getUser.setLong(1, id);
+
+        ResultSet resultSet = getUser.executeQuery();
+
+        resultSet.next(); // move to the returned row
+        User user = new User();
+        mapUser(user, resultSet);
+
+        if (resultSet.next()) {
+            throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
+        }
+
+        resultSet.close();
+        getUser.close();
+        return user;
+    }
     public User getUser(String username, String password) throws SQLException {
         String sql = "SELECT * FROM p_user WHERE username = ? AND password = ?";
         PreparedStatement getUser = connection.prepareStatement(sql);

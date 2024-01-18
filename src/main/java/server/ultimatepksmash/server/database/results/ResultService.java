@@ -21,17 +21,18 @@ public class ResultService {
     private static final Connection connection = DataBaseService.connection;
     private UserService userService = new UserService();
     
-    public List<Result1vs1> getResults1vs1() throws SQLException {
+    public List<Result1v1Read> getResults1vs1() throws SQLException {
         String sql = "SELECT * FROM p_result_1vs1";
         PreparedStatement getResults1vs1 = connection.prepareStatement(sql);
         ResultSet resultSet = getResults1vs1.executeQuery();
         
-        List<Result1vs1> results1vs1 = new ArrayList<>();
+        List<Result1v1Read> results1vs1 = new ArrayList<>();
+        Result1v1Assembler result1v1Assembler = new Result1v1Assembler();
         // Iterate over the rows
         while (resultSet.next()) {
             Result1vs1 result1vs1 = new Result1vs1();
             mapResult1vs1(result1vs1, resultSet);
-            results1vs1.add(result1vs1);
+            results1vs1.add(Result1v1Assembler.toRead(result1vs1));
         }
         resultSet.close();
         getResults1vs1.close();
