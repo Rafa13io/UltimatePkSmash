@@ -2,6 +2,7 @@ package server.ultimatepksmash.server.database.user;
 
 import lombok.AllArgsConstructor;
 import server.ultimatepksmash.server.database.DataBaseService;
+import server.ultimatepksmash.server.database.smasher.SmasherService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -162,5 +163,7 @@ public class UserService {
         user.setPassword(resultSet.getString("password"));
         user.setNumOfPlayedGames(resultSet.getInt("number_of_played_games"));
         user.setNumOfWins(resultSet.getInt("number_of_wins"));
+        SmasherService smasherService= new SmasherService();
+        user.setSmashers(smasherService.getUserSmashers(user.getId()));
     }
 }

@@ -1,5 +1,6 @@
 package cllient.ultimatepksmash.gui.login;
 
+import cllient.ultimatepksmash.gui.menu.MenuController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import lombok.Getter;
+import server.ultimatepksmash.server.database.smasher.Smasher;
+import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.messages.LogInReq;
 import server.ultimatepksmash.server.messages.LogInResp;
 
@@ -18,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 
 
 @Getter
@@ -39,11 +43,13 @@ public class LoginController {
     private TextField username;
     
     private Socket socket;
-
+    ObjectOutputStream outputStream;
+    ObjectInputStream inputStream;
     @FXML
     void goBack(MouseEvent event) throws IOException {
         Platform.runLater(() -> {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/welcome-page-view.fxml"));
+
             Parent root = null;
             try {
                 root = loader.load();
@@ -57,6 +63,23 @@ public class LoginController {
             stage.setScene(nowaScena);
         });
     }
+    public void goToMenuPage(LogInResp logInResp)
+    {
+        Platform.runLater(() -> {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/menu-view.fxml"));
+            loader.setController(new MenuController(socket, outputStream, inputStream, logInResp.user));
+            Parent destination = null;
+            try {
+                destination = loader.load();
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Scene scene = new Scene(destination);
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setScene(scene);
+        });
+    }
     
     @FXML
     void login(MouseEvent event) throws IOException {
@@ -67,8 +90,8 @@ public class LoginController {
                 socket = new Socket("localhost", 25800);
                 
                 // Create object output and input streams
-                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                outputStream = new ObjectOutputStream(socket.getOutputStream());
+                inputStream = new ObjectInputStream(socket.getInputStream());
                 
                 // Create a RegisterReq object and send it
                 LogInReq logInReq = new LogInReq(username.getText(), password.getText());
@@ -80,7 +103,7 @@ public class LoginController {
                 System.out.println(logInResp);
                 
                 if (logInResp.isSuccess()) {
-                    goBack(null);
+                    goToMenuPage(logInResp);
                 }
                 else {
                     Platform.runLater(() -> {
@@ -90,9 +113,8 @@ public class LoginController {
                 }
                 
                 // Close streams
-                outputStream.close();
-                inputStream.close();
-                socket.close(); //todo: pass further after log in
+                //outputStream.close();
+                //inputStream.close();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
