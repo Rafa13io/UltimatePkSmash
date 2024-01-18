@@ -438,9 +438,17 @@ public class ArenaController {
             if(startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
                 String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
                 arenaConsole.appendText(text);
+                BattleWonMessage battleWonMessage;
+                try {
+                    battleWonMessage = (BattleWonMessage) input.readObject();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
 
                 if(userSmasher == smasher1){
-                    showGameOverDialog("Wygyrwa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                    showGameOverDialog("Wygyrwa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName());
                 }
             }
         }
@@ -462,6 +470,8 @@ public class ArenaController {
             String text = userName2text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
             arenaConsole.appendText(text);
 
+
+
             if(userSmasher == smasher2){
                 showGameOverDialog("Przegrana gracza " + player2 ,"Wygrywa gracz: " + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
             }
@@ -470,9 +480,16 @@ public class ArenaController {
             if(startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
                 String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
                 arenaConsole.appendText(text);
-
+                BattleWonMessage battleWonMessage;
+                try {
+                    battleWonMessage = (BattleWonMessage) input.readObject();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
                 if(userSmasher == smasher2){
-                    showGameOverDialog("Wygyrwa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                    showGameOverDialog("Wygyrwa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName() );
                 }
             }
         }
