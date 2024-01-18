@@ -4,15 +4,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import server.ultimatepksmash.server.database.results.Result1v1Read;
-import server.ultimatepksmash.server.database.results.Result1vs1;
-import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
-import server.ultimatepksmash.server.messages.BattleStart1v1Req;
-import server.ultimatepksmash.server.messages.BattleStartResponse;
 import server.ultimatepksmash.server.messages.Get1v1ResultsReq;
 import server.ultimatepksmash.server.messages.Get1v1ResultsResp;
 
@@ -38,7 +38,18 @@ public class Results1vs1Controller {
     }
     @FXML
     void onBackClicked(MouseEvent event) {
-
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/menu-view.fxml"));
+        loader.setController(new MenuController(socket, outputStream, inputStream, user));
+        Parent destination = null;
+        try {
+            destination = loader.load();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Scene scene = new Scene(destination);
+        Stage stage = (Stage) table.getScene().getWindow();
+        stage.setScene(scene);
     }
     @FXML
     public void initialize()
