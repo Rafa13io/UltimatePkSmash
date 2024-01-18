@@ -59,6 +59,7 @@ public class MenuController {
             }
         });
         smashersDropBox.getItems().addAll(user.getSmashers());
+        smashersDropBox.setValue(user.getSmashers().get(0));
     }
     @FXML
     void on1vs1Clicked(MouseEvent event) {
