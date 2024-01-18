@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.smasher.SmasherService;
 import server.ultimatepksmash.server.database.user.User;
+import server.ultimatepksmash.server.database.user.UserService;
 import server.ultimatepksmash.server.gamesmanager.GameSession;
 import server.ultimatepksmash.server.gamesmanager.GamesManager;
 import server.ultimatepksmash.server.messages.*;
@@ -13,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.Callable;
 @AllArgsConstructor
 public class UserSession implements Callable<SessionEndStatus> {
@@ -70,16 +72,24 @@ public class UserSession implements Callable<SessionEndStatus> {
             output.writeObject(resp);
             System.out.println("Server sent StartRoundResp for user: "+user.getUsername() );
         }
+        sendBattleEndResult(gameSession, smasherService);
+    }
 
+    private void sendBattleEndResult(GameSession gameSession, SmasherService smasherService) throws SQLException, IOException {
         if(gameSession.isUserAWinner(user))
         {
-           // if(user)
-            output.writeObject(new BattleWonMessage(gameSession.getWonSmasher()));
+            Smasher wonSmasher = gameSession.getWonSmasher();
+            List<Smasher> mySmashers = smasherService.getUserSmashers(user.getId());
+            if(mySmashers.stream().filter(s -> s.getId().equals(wonSmasher.getId())).findAny().orElse(null) == null)
+            {
+                UserService userService = new UserService();
+                userService.addSmasherToUser(user.getId(), wonSmasher.getId());
+            }
+            output.writeObject(new BattleWonMessage(wonSmasher));
         }
         else {
             output.writeObject(new BattleLostMessage());
         }
-
     }
     private void logReq(Object req)
     {
