@@ -7,8 +7,9 @@ import server.ultimatepksmash.server.database.smasher.Smasher;
 import java.util.Random;
 
 public class BattleField {
-    public static void batlle(Smasher smasher1, Attack attackSmasher1, Defence defenceSmasher1, Smasher smasher2, Attack attackSmasher2, Defence defenceSmasher2)
+    public static char batlle(Smasher smasher1, Attack attackSmasher1, Defence defenceSmasher1, Smasher smasher2, Attack attackSmasher2, Defence defenceSmasher2)
     {
+        char result = ' ';
         Smasher firstSmasher;
         Smasher secondSmasher;
         Attack firstAttack;
@@ -17,6 +18,7 @@ public class BattleField {
         Defence secondDefence;
         if(smasher1.getEcts() > smasher2.getEcts())
         {
+            result = 'A';
             firstSmasher = smasher1;
             firstAttack = attackSmasher1;
             firstDefence = defenceSmasher1;
@@ -27,6 +29,7 @@ public class BattleField {
         }
         else if(smasher1.getEcts() < smasher2.getEcts())
         {
+            result = 'B';
             firstSmasher = smasher2;
             firstAttack = attackSmasher2;
             firstDefence = defenceSmasher2;
@@ -40,6 +43,7 @@ public class BattleField {
             int random = rand.nextInt(2);
             if(random == 0)
             {
+                result = 'A';
                 firstSmasher = smasher1;
                 firstAttack = attackSmasher1;
                 firstDefence = defenceSmasher1;
@@ -50,6 +54,7 @@ public class BattleField {
             }
             else
             {
+                result = 'B';
                 firstSmasher = smasher2;
                 firstAttack = attackSmasher2;
                 firstDefence = defenceSmasher2;
@@ -81,6 +86,7 @@ public class BattleField {
                 firstSmasher.setHealthPoints(firstSmasher.getHealthPoints() - secondAttack.getAttackPoints());
             }
         }
+        return result;
     }
 
 

@@ -161,7 +161,7 @@ public class GameSession {
                         Smasher smasherTeamB = smashers.get(bIndex);
                         Double healthPointsTeamA = smasherTeamA.getHealthPoints();
                         Double healthPointsTeamB = smasherTeamB.getHealthPoints();
-                        BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null));
+                        startRoundResp.setFirstTeam(BattleField.batlle(smasherTeamA, smasherTeamA.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamA())).findAny().orElse(null), smasherTeamA.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamA())).findAny().orElse(null), smasherTeamB, smasherTeamB.getAttacks().stream().filter(a -> a.getId().equals(startRoundResp.getIdAttackTeamB())).findAny().orElse(null), smasherTeamB.getDefences().stream().filter(d -> d.getId().equals(startRoundResp.getIdDefenceTeamB())).findAny().orElse(null)));
                         startRoundResp.setDamageTeamsA(healthPointsTeamA - smasherTeamA.getHealthPoints());
                         startRoundResp.setDamageTeamsB(healthPointsTeamB - smasherTeamB.getHealthPoints());
                         if(smasherTeamA.getHealthPoints() <= 0)
