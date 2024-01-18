@@ -7,7 +7,8 @@ import server.ultimatepksmash.server.database.smasher.Smasher;
 import java.util.Random;
 
 public class BattleField {
-    public static char batlle(Smasher smasher1, Attack attackSmasher1, Defence defenceSmasher1, Smasher smasher2, Attack attackSmasher2, Defence defenceSmasher2)
+    
+    public static char battle(Smasher smasher1, Attack attackSmasher1, Defence defenceSmasher1, Smasher smasher2, Attack attackSmasher2, Defence defenceSmasher2)
     {
         char result = ' ';
         Smasher firstSmasher;

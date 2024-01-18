@@ -69,11 +69,11 @@ public class UserSession implements Callable<SessionEndStatus> {
     }
 
     private void battle1v1Chosen(BattleStart1v1Req battleStart1v1Req) throws IOException, ClassNotFoundException, SQLException {
-        System.out.println("User wants"+ user.getUsername() +" to play 1v1 batlle");
+        System.out.println("User wants"+ user.getUsername() +" to play 1v1 battle");
         SmasherService smasherService = new SmasherService();
         Smasher mySmasher = smasherService.getSmasher(battleStart1v1Req.getUsersSmasherId());
         System.out.println("Try to join game session");
-        GameSession gameSession = GamesManager.joinGameSession1v1(user, mySmasher);
+        GameSession gameSession = GamesManager.joinGameSession1v1(user, mySmasher); // locks thread until second player joins
         System.out.println("User " + user.getUsername() +" have joined game session");
         output.writeObject(gameSession.getBattleStartResponse());
 
@@ -81,7 +81,7 @@ public class UserSession implements Callable<SessionEndStatus> {
         {
             StartRoundReq req =  (StartRoundReq) input.readObject();
             System.out.println("Server received StartRoundReq from user: "+user.getUsername() );
-            StartRoundResp resp = gameSession.executeRequest(user, req);
+            StartRoundResp resp = gameSession.executeRequest(user, req); // locks until all start round requests are sent
             output.writeObject(resp);
             System.out.println("Server sent StartRoundResp for user: "+user.getUsername() );
         }
@@ -89,7 +89,7 @@ public class UserSession implements Callable<SessionEndStatus> {
     }
 
     private void battle2v2Chosen(BattleStart2v2Req battleStart2v2Req) throws IOException, ClassNotFoundException, SQLException {
-        System.out.println("User wants"+ user.getUsername() +" to play 2v2 batlle");
+        System.out.println("User wants"+ user.getUsername() +" to play 2v2 battle");
         SmasherService smasherService = new SmasherService();
         Smasher mySmasher = smasherService.getSmasher(battleStart2v2Req.getUsersSmasherId());
         System.out.println("Try to join game session");
