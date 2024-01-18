@@ -6,4 +6,3 @@ INSERT INTO public.p_user (username,email,"password",number_of_played_games,numb
 	 ('wenflon','user5@gmail.com','123',0,0),
 	 ('kuchcik2010pl','user6@gmail.com','123',0,0),
 	 ('mati33','user7@gmail.com','123',0,0),
-	 ('varchar04','user8@gmail.com','123',0,0);

@@ -53,6 +53,33 @@ public class UserService {
         getUser.close();
         return user;
     }
+
+    public User findUserNyName(String username) throws SQLException {
+        String sql = "SELECT * FROM p_user WHERE username = ? ";
+        PreparedStatement getUser = connection.prepareStatement(sql);
+        getUser.setString(1, username);
+
+        ResultSet resultSet = getUser.executeQuery();
+
+        User user = new User();
+        try {
+            resultSet.next(); // move to the returned row
+            mapUser(user, resultSet);
+        }
+        catch (SQLException e) {
+            throw new SQLException("error getiign a user (query probably returned no rows)");
+        }
+
+
+        if (resultSet.next()) {
+            throw new RuntimeException("Query didn't return unique row, method: getUser() in: " + this.getClass());
+        }
+
+        resultSet.close();
+        getUser.close();
+        return user;
+    }
+
     public User getUser(String username, String password) throws SQLException {
         String sql = "SELECT * FROM p_user WHERE username = ? AND password = ?";
         PreparedStatement getUser = connection.prepareStatement(sql);
@@ -106,9 +133,12 @@ public class UserService {
         addUser.setInt(4, user.getNumOfPlayedGames());
         addUser.setInt(5, user.getNumOfWins());
 
+
         addUser.executeUpdate();
         System.out.println("added user: " + user);
         addUser.close();
+        User fUser = findUserNyName(user.getUsername());
+        addSmasherToUser(fUser.getId(), 1L);
     }
 
     public void addSmasherToUser(Long userId, Long smasherId) throws SQLException {
