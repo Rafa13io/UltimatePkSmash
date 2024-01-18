@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.session;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.results.Result1vs1;
 import server.ultimatepksmash.server.database.results.ResultService;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.smasher.SmasherService;
@@ -9,7 +10,6 @@ import server.ultimatepksmash.server.database.user.UserService;
 import server.ultimatepksmash.server.gamesmanager.GameSession;
 import server.ultimatepksmash.server.gamesmanager.GamesManager;
 import server.ultimatepksmash.server.messages.BattleStart1v1Req;
-import server.ultimatepksmash.server.messages.BattleStart1v1Response;
 import server.ultimatepksmash.server.messages.LogOutReq;
 import server.ultimatepksmash.server.messages.*;
 
@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 @AllArgsConstructor
@@ -118,21 +119,26 @@ public class UserSession implements Callable<SessionEndStatus> {
             output.writeObject(resp);
         }
         sendBattleEndResult(gameSession, smasherService);
+        ResultService resultService = new ResultService();
+        resultService.addResult1vs1(new Result1vs1( gameSession.players.get(gameSession.winners == 'A' ? 0 : 1).getId(), gameSession.players.get(gameSession.winners == 'A' ? 1 : 0).getId()));
     }
 
     private void sendBattleEndResult(GameSession gameSession, SmasherService smasherService) throws SQLException, IOException {
+        UserService userService = new UserService();
         if(gameSession.isUserAWinner(user))
         {
             Smasher wonSmasher = gameSession.getWonSmasher();
             List<Smasher> mySmashers = smasherService.getUserSmashers(user.getId());
+
             if(mySmashers.stream().filter(s -> s.getId().equals(wonSmasher.getId())).findAny().orElse(null) == null)
             {
-                UserService userService = new UserService();
+                userService.addWinToUser(user.getId());
                 userService.addSmasherToUser(user.getId(), wonSmasher.getId());
             }
             output.writeObject(new BattleWonMessage(wonSmasher));
         }
         else {
+            userService.addLoseToUser(user.getId());
             output.writeObject(new BattleLostMessage());
         }
     }

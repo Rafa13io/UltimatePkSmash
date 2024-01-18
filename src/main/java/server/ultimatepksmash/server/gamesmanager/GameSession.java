@@ -16,7 +16,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class GameSession {
-    protected List<User> players = new ArrayList<>();
+    public List<User> players = new ArrayList<>();
     protected List<Smasher> smashers = new ArrayList<>();
    // private
    protected int numberOfPlayersReady = 0;
@@ -35,7 +35,7 @@ public class GameSession {
     private StartRoundResp startRoundResp;
     @Getter
     private Smasher wonSmasher;
-    char winners = ' ';
+    public char winners = ' ';
     public boolean isUserAWinner(User user)
     {
         boolean result = false;
@@ -78,22 +78,35 @@ public class GameSession {
         }
         waitForOtherPlayers();
     }
+    ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    Lock read  = readWriteLock.readLock();
+    Lock write = readWriteLock.writeLock();
     protected void waitForOtherPlayers()
     {
         numberOfPlayersReadyWriteLock.lock();
         numberOfPlayersReady++;
         if(numberOfPlayerInGame != numberOfPlayersReady)
         {
+            read.lock();
             while (numberOfPlayerInGame != numberOfPlayersReady) {
                 numberOfPlayersReadyWriteLock.unlock();
                 numberOfPlayersReadyWriteLock.lock();
             }
+            numberOfPlayersReadyWriteLock.unlock();
+            read.unlock();
+            write.lock();
+            System.out.println("numberOfPlayersReady:   "+numberOfPlayersReady);
             if(numberOfPlayersReady == numberOfPlayerInGame) numberOfPlayersReady = 0;
+            write.unlock();
         }
-        numberOfPlayersReadyWriteLock.unlock();
+        else
+        {
+            numberOfPlayersReadyWriteLock.unlock();
+        }
+
     }
 
-    public void isUserPlaying(User user)
+    public boolean isUserPlaying(User user)
     {
         boolean result = false;
         indexLock.lock();
@@ -103,6 +116,7 @@ public class GameSession {
             result = indexOf == aIndex || indexOf == bIndex;
         }
         indexLock.unlock();
+        return result;
     }
 
     public void notifySmasherKilled(Smasher smasher)
@@ -111,7 +125,7 @@ public class GameSession {
         synchronized (players)
         {
             int indexOf = smashers.indexOf(smasher);
-            if(indexOf < numberOfPlayerInGame) aIndex++;
+            if(indexOf < numberOfPlayerInGame/2) aIndex++;
             else bIndex++;
         }
         indexLock.unlock();
@@ -126,7 +140,6 @@ public class GameSession {
         return result;
     }
     public StartRoundResp executeRequest(User user, StartRoundReq req) throws SQLException {
-        try {
             numberOfPlayersReadyRaadLock.lock();
             if (numberOfPlayersReady == 0) {
                 startRoundResp = new StartRoundResp();
@@ -182,11 +195,7 @@ public class GameSession {
             }
             numberOfPlayersReadyRaadLock.unlock();
             waitForOtherPlayers();
-        }
-        catch (Exception e)
-        {
-            System.out.println("12");
-        }
+
         return startRoundResp;
     }
     public void drawSmasher() throws SQLException {

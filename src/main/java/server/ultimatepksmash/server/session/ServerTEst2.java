@@ -21,43 +21,19 @@ public class ServerTEst2 {
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             System.out.println("Sending Init request");
             System.out.println("Sending Init request");
-            output.writeObject(new LogInReq("kuba", "123"));
+            output.writeObject(new LogInReq("marek_śrubka", "123"));
 
             LogInResp logInResp = (LogInResp) input.readObject();
             System.out.println("Login status:" + logInResp.isSuccess() + " " + logInResp.getUser());
-            output.writeObject(new BattleStart1v1Req(2L));
+            output.writeObject(new BattleStart1v1Req(1L));
             BattleStartResponse battleStart1v1Response = (BattleStartResponse) input.readObject();
             System.out.println(battleStart1v1Response);
 
             //1
-            output.writeObject(new StartRoundReq(4L, 3L));
+            System.out.println("StartRoundReq 1 sending");
+            output.writeObject(new StartRoundReq(1L, 1L));
+            System.out.println("StartRoundResp 1 receiving");
             StartRoundResp startRoundResp = (StartRoundResp) input.readObject();
-
-            //2
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //3
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //4
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //5
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //6
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //7
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //8
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-            //9
-            output.writeObject(new StartRoundReq(4L, 3L));
-            startRoundResp = (StartRoundResp) input.readObject();
-
             Object result = (Object)  input.readObject();
             if(result instanceof BattleWonMessage)
             {
