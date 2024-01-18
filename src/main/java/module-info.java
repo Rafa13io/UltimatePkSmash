@@ -20,4 +20,8 @@ module cllient.ultimatepksmash {
     exports cllient.ultimatepksmash.gui.arena;
     exports cllient.ultimatepksmash.gui.menu;
     opens cllient.ultimatepksmash.gui.menu to javafx.fxml;
+
+    exports server.ultimatepksmash.server.messages;
+    exports server.ultimatepksmash.server.database;
+    exports server.ultimatepksmash.server.database.user;
 }

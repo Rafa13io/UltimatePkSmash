@@ -1,8 +1,15 @@
 package cllient.ultimatepksmash.gui.menu;
 
 
+import cllient.ultimatepksmash.gui.arena.ArenaController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import server.ultimatepksmash.server.database.smasher.Smasher;
 import server.ultimatepksmash.server.database.user.User;
 import server.ultimatepksmash.server.messages.*;
@@ -18,6 +25,8 @@ public class Lobby1v1Controller {
     ObjectInputStream inputStream;
     Smasher chosenSmasher;
     User user;
+    @FXML
+    private AnchorPane anchor;
     public  Lobby1v1Controller(Socket socket, ObjectOutputStream outputStream, ObjectInputStream inputStream, User user, Smasher chosenSmascher)
     {
         this.socket =socket;
@@ -30,6 +39,19 @@ public class Lobby1v1Controller {
     {
         Platform.runLater(() -> {
             System.out.println("go to arena");//TODO: implement this
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cllient/ultimatepksmash/arena-view.fxml"));
+            loader.setController(new ArenaController(response,user,socket,inputStream,outputStream));
+            Parent destination = null;
+            try {
+                destination = loader.load();
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Scene scene = new Scene(destination);
+            Stage stage = (Stage) anchor.getScene().getWindow();
+            stage.setScene(scene);
+
         });
 
     }

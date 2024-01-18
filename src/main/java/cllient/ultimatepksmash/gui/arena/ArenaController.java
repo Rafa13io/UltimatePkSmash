@@ -6,15 +6,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Scale;
 import javafx.stage.Modality;
-import server.ultimatepksmash.server.database.skills.Type;
-import server.ultimatepksmash.server.database.skills.attack.Attack;
-import server.ultimatepksmash.server.database.skills.defence.Defence;
 import server.ultimatepksmash.server.database.smasher.Smasher;
+import server.ultimatepksmash.server.database.user.User;
+import server.ultimatepksmash.server.messages.BattleStartResponse;
 import server.ultimatepksmash.server.messages.StartRoundReq;
 import server.ultimatepksmash.server.messages.StartRoundResp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.net.Socket;
+import java.util.Objects;
 
 public class ArenaController {
     @FXML
@@ -56,11 +56,7 @@ public class ArenaController {
     private boolean attackActive3 = false;
     private boolean defenceActive1 = false;
     private boolean defenceActive2 = false;
-    private Attack smasherAttack;
-    private Defence smasherDefence;
 
-    private List<Attack> attackList;
-    private List<Defence> defenceList;
     @FXML
     private ImageView smasher1ImageView;
     @FXML
@@ -69,46 +65,74 @@ public class ArenaController {
     @FXML
     private TextArea attack1Description;
     @FXML
-    private Label attack1Dmg;
+    private TextArea attack2Description;
     @FXML
-    private Label attack1Type;
+    private TextArea attack3Description;
+    @FXML
+    private TextArea defence1Description;
+    @FXML
+    private TextArea defence2Description;
     @FXML
     private Button submitButton;
     private Long chosenAttackId;
     private Long chosenDefenceId;
-    @FXML
-    private Button test;
-
-    private boolean teamA = false;
+    private Smasher userSmasher;
+    private boolean teamA;
     private boolean decisionSubmitted = false;
-    public ArenaController() {
-        // Konstruktor bezargumentowy
-        this.smasherAttack = new Attack(1L,"Podcinka","Podcina przeciwnika", Type.fizyczny,15,1L);
-        this.smasherDefence = new Defence(1L, "Twardy jak skałą","Bardzo twardy",Type.fizyczny,10,1l);
-        this.attackList = new ArrayList<>();
-        this.defenceList = new ArrayList<>();
-        this.attackList.add(smasherAttack);
-        this.defenceList.add(smasherDefence);
+    private Socket socket;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    @FXML
+    private Label userName1;
+    private String userName1text;
+    private String userName2text;
+    @FXML
+    private Label userName2 ;
 
-        this.smasher1 = new Smasher(1L,"Rigby ","Brązowy szop",10,100D,"C:\\Users\\Vecza\\IntelliJ_Projects\\UltimateSmash\\src\\main\\photos\\avat ig.png",attackList,defenceList);
-        this.smasher2 = new Smasher(2L,"rIGBY","Brązowy szop",100D,10,"C:\\Users\\Vecza\\IntelliJ_Projects\\UltimateSmash\\src\\main\\photos\\avat ig.png");
+    public ArenaController(BattleStartResponse battleStartResponse, User user, Socket socket, ObjectInputStream in, ObjectOutputStream out){
+        this.output = out;
+        this.input = in;
+        this.socket = socket;
+
+        if(Objects.equals(user.getUsername(), battleStartResponse.getPlayersNames().get(0))){
+            teamA =true;
+        }else{
+            teamA = false;
+        }
+
+        if(teamA){
+            userSmasher = battleStartResponse.getSmashers().get(0);
+            this.smasher1 = battleStartResponse.getSmashers().get(0);
+            this.smasher2 = battleStartResponse.getSmashers().get(1);
+            this.userName1text = battleStartResponse.getPlayersNames().get(0);
+            this.userName2text = battleStartResponse.getPlayersNames().get(1);
+
+        }else{
+            userSmasher = battleStartResponse.getSmashers().get(1);
+            this.smasher1 = battleStartResponse.getSmashers().get(0);
+            this.smasher2 = battleStartResponse.getSmashers().get(1);
+            this.userName1text = battleStartResponse.getPlayersNames().get(0);
+            this.userName2text = battleStartResponse.getPlayersNames().get(1);
+
+        }
 
     }
-
     @FXML
     public void initialize() {
+
+        userName1.setText(userName1text);
+        userName2.setText(userName2text);
         // Inicjalizacja ProgressBar i Label dla smasher1
+
         currentHP1 = smasher1.getHealthPoints();
         progressBar1.setProgress(smasher1.getHealthPoints());
         progressBar1.setStyle("-fx-accent: #00ff00");
         smasher1Name.setText(smasher1.getName());
-        // statycczna utrata hp
         currentHP1 = smasher1.getHealthPoints();
 
 
         currentHP2 = smasher2.getHealthPoints();
         progressBar2.setProgress(smasher2.getHealthPoints());
-        //ustawienie kolorku na zielony
         progressBar2.setStyle("-fx-accent: #00ff00");
         smasher2Name.setText(smasher2.getName());
 
@@ -116,18 +140,37 @@ public class ArenaController {
         updateHP(progressBar2,hp2, currentHP2,smasher2.getHealthPoints());
 
 
-        loadSmasherImage(smasher1ImageView, smasher1.getPhotoPath());
+        loadSmasherImage(smasher1ImageView, "C:\\Users\\Vecza\\IntelliJ_Projects\\UltimateSmash\\src\\main\\photos\\avat ig.png");
 
         flipImageHorizontally(smasher2ImageView);
-        loadSmasherImage(smasher2ImageView, smasher2.getPhotoPath());
+        loadSmasherImage(smasher2ImageView, "C:\\Users\\Vecza\\IntelliJ_Projects\\UltimateSmash\\src\\main\\photos\\avat ig.png");
 
 
-        attack1Description.appendText("Opis: " +smasher1.getAttacks().get(0).getDescription());
-        attack1Description.setEditable(false);
-        attack1Dmg.setText("Obrażenia: " + smasher1.getAttacks().get(0).getAttackPoints().toString());
-        attack1Type.setText("Typ: " + smasher1.getAttacks().get(0).getType().toString());
+        attack1Description.appendText("Opis: " + userSmasher.getAttacks().get(0).getDescription() + "\n");
+        attack1Description.appendText("Dmg: " + userSmasher.getAttacks().get(0).getAttackPoints().toString() + "\n");
+        attack1Description.appendText("Typ " + userSmasher.getAttacks().get(0).getType().toString());
+        attackButton1.setText(userSmasher.getAttacks().get(0).getName());
 
-        attackButton1.setText(smasher1.getAttacks().get(0).getName());
+        attack2Description.appendText("Opis: " + userSmasher.getAttacks().get(1).getDescription() + "\n");
+        attack2Description.appendText("Dmg: " + userSmasher.getAttacks().get(1).getAttackPoints().toString() + "\n");
+        attack2Description.appendText("Typ " + userSmasher.getAttacks().get(1).getType().toString());
+        attackButton2.setText(userSmasher.getAttacks().get(1).getName());
+
+        attack3Description.appendText("Opis: " + userSmasher.getAttacks().get(2).getDescription() + "\n");
+        attack3Description.appendText("Dmg: " + userSmasher.getAttacks().get(2).getAttackPoints().toString() + "\n");
+        attack3Description.appendText("Typ " + userSmasher.getAttacks().get(2).getType().toString());
+        attackButton3.setText(userSmasher.getAttacks().get(2).getName());
+
+        defence1Description.appendText("Opis: " + userSmasher.getDefences().get(0).getDescription() + "\n");
+        defence1Description.appendText("Def: " + userSmasher.getDefences().get(0).getDefencePoints().toString() + "\n");
+        defence1Description.appendText("Typ " + userSmasher.getDefences().get(0).getType().toString());
+        defenceButton1.setText(userSmasher.getDefences().get(0).getName());
+
+        defence2Description.appendText("Opis: " + userSmasher.getDefences().get(1).getDescription() + "\n");
+        defence2Description.appendText("Def: " + userSmasher.getDefences().get(1).getDefencePoints().toString() + "\n");
+        defence2Description.appendText("Typ " + userSmasher.getDefences().get(1).getType().toString());
+        defenceButton2.setText(userSmasher.getDefences().get(1).getName());
+
         submitButton.setOnAction(event -> submitDecision(chosenAttackId, chosenDefenceId));
         arenaConsole.setEditable(false);
     }
@@ -149,12 +192,8 @@ public class ArenaController {
         } else {
             attackButton1.setStyle(""); // Resetowanie stylu do domyślnego
         }
-        chosenAttackId = smasher1.getAttacks().get(0).getId();
+        chosenAttackId = userSmasher.getAttacks().get(0).getId();
 
-        String smasherName = smasher1.getName();
-        String logMessage = "Smasher " + smasherName + " użył ataku : " + smasher1.getAttacks().get(0).getName() +", zadając " + smasher1.getAttacks().get(0).getAttackPoints().toString() + " obrażeń.\n";
-        arenaConsole.appendText(logMessage);
-        System.out.println(logMessage);
     }
 
     @FXML
@@ -174,14 +213,9 @@ public class ArenaController {
             attackButton2.setStyle(""); // Resetowanie stylu do domyślnego
         }
 
-        chosenAttackId = smasher2.getAttacks().get(1).getId();
-        String smasherName = smasher2.getName();
+        chosenAttackId = userSmasher.getAttacks().get(1).getId();
+        String smasherName = userSmasher.getName();
 
-        String logMessage = "Smasher " + smasherName + " użył ataku : "  +", zadając " + " obrażeń.\n";
-        // Tu umieść kod obsługujący naciśnięcie guzika
-        arenaConsole.appendText(logMessage);
-
-        System.out.println(logMessage);
     }
 
     @FXML
@@ -199,16 +233,12 @@ public class ArenaController {
         } else {
             attackButton3.setStyle(""); // Resetowanie stylu do domyślnego
         }
-        chosenAttackId = smasher1.getAttacks().get(2).getId();
+        chosenAttackId = userSmasher.getAttacks().get(2).getId();
         //TODO zczytać dane z attaku ale smasher jeszcze nie ma ataków
 
-        String smasherName = smasher1.getName();
+        String smasherName = userSmasher.getName();
 
-        String logMessage = "Smasher " + smasherName + " użył ataku 3 : " + ", zadając " + " obrażeń.\n";
-        // Tu umieść kod obsługujący naciśnięcie guzika
-        arenaConsole.appendText(logMessage);
 
-        System.out.println(logMessage);
     }
     @FXML
     public void handleButtonDefence1(){
@@ -222,15 +252,11 @@ public class ArenaController {
             defenceButton1.setStyle(""); // Resetowanie stylu do domyślnego
         }
 
-        chosenDefenceId = smasher1.getDefences().get(0).getId();
+        chosenDefenceId = userSmasher.getDefences().get(0).getId();
 
-        String smasherName = smasher1.getName();
+        String smasherName = userSmasher.getName();
 
-        String logMessage = "Smasher " + smasherName + " użył obrony 1 : " + ", broniąc " + " obrażeń.\n";
-        // Tu umieść kod obsługujący naciśnięcie guzika
-        arenaConsole.appendText(logMessage);
 
-        System.out.println(logMessage);
     }
     @FXML
     public void handleButtonDefence2(){
@@ -245,14 +271,10 @@ public class ArenaController {
         }
 
         //TODO zczytać dane z attaku ale smasher jeszcze nie ma ataków
-        chosenDefenceId = smasher1.getDefences().get(1).getId();
-        String smasherName = smasher1.getName();
+        chosenDefenceId = userSmasher.getDefences().get(1).getId();
+        String smasherName = userSmasher.getName();
 
-        String logMessage = "Smasher " + smasherName + " użył obrony 1 : " + ", broniąc " + " obrażeń.\n";
-        // Tu umieść kod obsługujący naciśnięcie guzika
-        arenaConsole.appendText(logMessage);
-
-        System.out.println(logMessage);
+//
     }
 
     public void updateHP(ProgressBar progressBar,Label hpLabel, double currentHP, double maxHP){
@@ -266,24 +288,32 @@ public class ArenaController {
         hpLabel.setText(hpText);
     }
 
-    public StartRoundReq submitDecision(Long attack, Long defence){
+    public void submitDecision(Long attack, Long defence) {
         if (!decisionSubmitted) {
-            StartRoundReq startRoundReq = new StartRoundReq(attack,defence);
-            System.out.println(attack + " " + defence);
+            try {
+                System.out.println(attack + " " + defence);
 
-            setButtonsDisabled();
-            decisionSubmitted = true;
+                setButtonsDisabled();
+                decisionSubmitted = true;
 
-            return startRoundReq;
+                output.writeObject(new StartRoundReq(attack,defence));
+                StartRoundResp startRoundResp = (StartRoundResp) input.readObject();
+                handleServerResponse(startRoundResp);
+
+            }catch (IOException ioException){
+                ioException.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
         } else {
             // Możesz obsłużyć sytuację, gdy decyzja została już wcześniej wysłana
             System.out.println("Decyzja już wysłana.");
             arenaConsole.appendText("Decyzja już wysłana.");
-            return null;
+
         }
     }
-    public void handleServerResponse(){
-        StartRoundResp startRoundResp = new StartRoundResp(10D,10D,false,false,1L,1L,1L,1L,true,'A');
+    public void handleServerResponse(StartRoundResp startRoundResp){
         char firstTeam = startRoundResp.getFirstTeam();
 
         if( firstTeam == 'A'){
@@ -304,33 +334,64 @@ public class ArenaController {
     public void updateTeam1(StartRoundResp startRoundResp){
         double damageTaken = startRoundResp.getDamageTeamsA();
         currentHP1 = currentHP1 - damageTaken;
-        String enemyAtack ="Nazwa Usera Smasher " + smasher2.getName() + "Zadaje " + damageTaken + " Obrażeń";
+        String enemyAtack = userName2text + " " + smasher2.getName() + " Zadaje " + damageTaken + " Obrażeń";
 
         arenaConsole.appendText(enemyAtack + "\n");
 
         updateHP(progressBar1,hp1,currentHP1,smasher1.getHealthPoints());
 
+        String player1 = userName1text;
+        String player2 = userName2text;
+
         if (startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
-            String text = " Nazwa Usera: Smasher " + smasher1.getName() + " zostaje pokonany" + "\n";
+            String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
             arenaConsole.appendText(text);
-            showGameOverDialog("Przegrana ","Nazwa Usera: Smasher " + smasher1.getName() + " zostaje pokonany" + "\n" );
-        };
+
+            if(userSmasher == smasher1){
+                showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+            }
+        }else{
+            if(startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
+                String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
+                arenaConsole.appendText(text);
+
+                if(userSmasher == smasher1){
+                    showGameOverDialog("Wygyrwa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                }
+            }
+        }
     }
 
     public void updateTeam2(StartRoundResp startRoundResp){
         double damageTaken = startRoundResp.getDamageTeamsB();
         currentHP2 = currentHP2 - damageTaken;
-        String enemyAtack ="Nazwa Usera Smasher " + smasher1.getName() + "Zadaje " + damageTaken + " Obrażeń";
+        String enemyAtack = userName1text + " " + smasher1.getName() + "Zadaje " + damageTaken + " Obrażeń";
 
         arenaConsole.appendText(enemyAtack + "\n" );
 
         updateHP(progressBar2,hp2,currentHP2,smasher2.getHealthPoints());
 
-        if (startRoundResp.isWasAttackFatalForTeamA() || currentHP2 <= 0){
-            String text = " Nazwa Usera: Smasher " + smasher2.getName() + " zostaje pokonany " + "\n" ;
+        String player1 = userName1text;
+        String player2 = userName2text;
+
+        if (startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
+            String text = userName1text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
             arenaConsole.appendText(text);
-            showGameOverDialog("Przegrana ","Nazwa Usera: Smasher " + smasher2.getName() + " zostaje pokonany" + "\n");
-        };
+
+            if(userSmasher == smasher2){
+                showGameOverDialog("Przegrana gracza " + player2 ,"Wygrywa gracz: " + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+            }
+
+        }else{
+            if(startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
+                String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
+                arenaConsole.appendText(text);
+
+                if(userSmasher == smasher1){
+                    showGameOverDialog("Wygyrwa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                }
+            }
+        }
     }
     private void showGameOverDialog(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
