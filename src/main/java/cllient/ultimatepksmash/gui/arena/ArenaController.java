@@ -142,10 +142,10 @@ public class ArenaController {
         updateHP(progressBar2,hp2, currentHP2,smasher2.getHealthPoints());
 
 
-        loadSmasherImage(smasher1ImageView, "C:\\Users\\Vecza\\IntelliJ_Projects\\UltimateSmash\\src\\main\\photos\\avat ig.png");
+        loadSmasherImage(smasher1ImageView, "C:\\Users\\kubad\\Desktop\\programowanie\\UltimatePkSmash\\src\\main\\photos\\avat ig.png");
 
         flipImageHorizontally(smasher2ImageView);
-        loadSmasherImage(smasher2ImageView, "C:\\Users\\Vecza\\IntelliJ_Projects\\UltimateSmash\\src\\main\\photos\\avat ig.png");
+        loadSmasherImage(smasher2ImageView, "C:\\Users\\kubad\\Desktop\\programowanie\\UltimatePkSmash\\src\\main\\photos\\avat ig.png");
 
 
         attack1Description.appendText("Opis: " + userSmasher.getAttacks().get(0).getDescription() + "\n");
@@ -336,12 +336,13 @@ public class ArenaController {
 
                     if(userSmasher == smasher1){
                         updateHP(progressBar1,hp1,0,smasher1.getHealthPoints());
-                        showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" );
+                        showGameOverDialog("Przegrana gracza " + player1 ,"Wygrywa gracz:" + player2 + "\n"  + smasher1.getName() + " zostaje pokonany" );
                     }
                 }else{
                     if(startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
                         String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
                         arenaConsole.appendText(text);
+                        updateHP(progressBar2,hp2,0,smasher2.getHealthPoints());
 
                         if(userSmasher == smasher1){
                             BattleWonMessage battleWonMessage;
@@ -353,7 +354,7 @@ public class ArenaController {
                                 throw new RuntimeException(e);
                             }
                             updateHP(progressBar2,hp2,0,smasher2.getHealthPoints());
-                            showGameOverDialog(" TEAM A gracz pierwszy Wygrywa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName()  );
+                            showGameOverDialog(" TEAM A gracz pierwszy Wygrywa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName()  );
                         }
                     }
                 }
@@ -369,6 +370,7 @@ public class ArenaController {
                 if (startRoundResp.isWasAttackFatalForTeamB() || currentHP2 <= 0){
                     String text = userName2text + " " + smasher2.getName() + " zostaje pokonany " + "\n" ;
                     arenaConsole.appendText(text);
+                    updateHP(progressBar2,hp2,0,smasher1.getHealthPoints());
 
                     if(userSmasher == smasher2){
                         try {
@@ -379,14 +381,15 @@ public class ArenaController {
                             throw new RuntimeException(e);
                         }
                         updateHP(progressBar2,hp2,0,smasher1.getHealthPoints());
-                        showGameOverDialog("Przegrana gracza " + player2 ,"Wygrywa gracz: " + player1 + "\n"  + smasher1.getName() + " zostaje pokonany" );
+                        showGameOverDialog("Przegrana gracza " + player2 ,"Wygrywa gracz: " + player1 + "\n"  + smasher2.getName() + " zostaje pokonany" );
                     }
 
                 }else{
                     if(startRoundResp.isWasAttackFatalForTeamA() || currentHP1 <= 0){
                         String text = userName1text + " " + smasher1.getName() + " zostaje pokonany" + "\n";
                         arenaConsole.appendText(text);
-
+                        updateHP(progressBar1,hp1,0,smasher1.getHealthPoints());
+                        
                         if(userSmasher == smasher2){
                             BattleWonMessage battleWonMessage;
                             try {
@@ -396,8 +399,8 @@ public class ArenaController {
                             } catch (ClassNotFoundException e) {
                                 throw new RuntimeException(e);
                             }
-                            updateHP(progressBar1,hp1,0,smasher1.getHealthPoints());
-                            showGameOverDialog("Wygrywa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName()  );
+//                            updateHP(progressBar1,hp1,0,smasher1.getHealthPoints());
+                            showGameOverDialog("Wygrywa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName()  );
                         }
                     }
                 }
@@ -479,7 +482,7 @@ public class ArenaController {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 // Tutaj możesz dodać kod obsługujący zamknięcie gry lub inne akcje
-                System.exit(0); // Przykładowe zamknięcie aplikacji po wciśnięciu OK
+//                System.exit(0); // Przykładowe zamknięcie aplikacji po wciśnięciu OK
             }
         });
     }
