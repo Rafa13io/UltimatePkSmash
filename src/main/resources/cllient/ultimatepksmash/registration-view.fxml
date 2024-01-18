@@ -5,8 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane fx:id="password" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="755.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cllient.ultimatepksmash.gui.login.RegistrationController ">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="755.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cllient.ultimatepksmash.gui.login.RegistrationController">
    <children>
       <Label layoutX="265.0" layoutY="95.0" prefHeight="78.0" prefWidth="226.0" text="Username" />
       <Label layoutX="265.0" layoutY="203.0" prefHeight="78.0" prefWidth="226.0" text="E-mail" />
@@ -14,6 +13,7 @@
       <TextField fx:id="username" layoutX="342.0" layoutY="122.0" />
       <TextField fx:id="email" layoutX="342.0" layoutY="230.0" />
       <TextField fx:id="password" layoutX="342.0" layoutY="346.0" />
-      <Button layoutX="303.0" layoutY="430.0" mnemonicParsing="false" onMouseClicked="#registerUser" prefHeight="45.0" prefWidth="149.0" text="Register" />
+      <Button fx:id="registerButton" layoutX="385.0" layoutY="429.0" mnemonicParsing="false" onMouseClicked="#registerUser" prefHeight="45.0" prefWidth="149.0" text="Register" />
+      <Button fx:id="backButton" layoutX="199.0" layoutY="429.0" mnemonicParsing="false" onMouseClicked="#goBack" prefHeight="45.0" prefWidth="132.0" text="Back" />
    </children>
 </AnchorPane>

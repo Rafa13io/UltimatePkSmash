@@ -11,27 +11,19 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class RegistrationController {
+public class LoginController {
 
     @FXML
     private Button backButton;
 
     @FXML
-    private TextField email;
+    private Button loginButton;
 
     @FXML
     private TextField password;
 
     @FXML
-    private Button registerButton;
-
-    @FXML
     private TextField username;
-
-    @FXML
-    void registerUser(MouseEvent event) throws IOException {
-
-    }
 
     @FXML
     void goBack(MouseEvent event) throws IOException {
@@ -44,4 +36,9 @@ public class RegistrationController {
         Stage stage = (Stage) backButton.getScene().getWindow();
         stage.setScene(nowaScena);
     }
+    @FXML
+    void login(MouseEvent event) {
+
+    }
+
 }

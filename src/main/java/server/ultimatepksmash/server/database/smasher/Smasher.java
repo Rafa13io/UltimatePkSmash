@@ -25,7 +25,7 @@ public class Smasher implements Serializable {
     private List<Attack> attacks = null;
     private List<Defence> defences = null;
     
-    public Smasher(Long id, String name, String description, String healthPoints, Integer ects, String photoPath) {
+    public Smasher(Long id, String name, String description, Double healthPoints, Integer ects, String photoPath) {
         this.id = id;
         this.name = name;
         this.description = description;

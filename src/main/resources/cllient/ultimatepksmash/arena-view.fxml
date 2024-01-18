@@ -23,20 +23,20 @@
       <Ellipse fill="#5a748d" layoutX="218.0" layoutY="444.0" radiusX="118.0" radiusY="9.0" stroke="#bfb4b4" strokeType="INSIDE" />
       <Ellipse fill="#5a748d" layoutX="969.0" layoutY="444.0" radiusX="118.0" radiusY="9.0" stroke="#bfb4b4" strokeType="INSIDE" />
       <TextArea fx:id="arenaConsole" layoutX="444.0" layoutY="143.0" prefHeight="256.0" prefWidth="314.0" text="&#10;" />
-      <AnchorPane layoutY="515.0" prefHeight="325.0" prefWidth="1223.0">
-         <children>
-            <Button fx:id="attackTest" layoutX="48.0" layoutY="49.0" mnemonicParsing="false" onMouseClicked="#handleAttackButton" prefHeight="62.0" prefWidth="128.0" text="ATTACK" />
-            <Button layoutX="48.0" layoutY="138.0" mnemonicParsing="false" onMouseClicked="#handleAttackButton" prefHeight="62.0" prefWidth="128.0" text="ATTACK" />
-            <Button layoutX="50.0" layoutY="227.0" mnemonicParsing="false" onMouseClicked="#handleAttackButton" prefHeight="62.0" prefWidth="128.0" text="ATTACK" />
-            <Button fx:id="DEFENCE1" layoutX="807.0" layoutY="220.0" mnemonicParsing="false" prefHeight="62.0" prefWidth="128.0" text="DEFENCE" />
-            <Button layoutX="799.0" layoutY="138.0" mnemonicParsing="false" prefHeight="62.0" prefWidth="128.0" text="DEFENCE" />
-            <Button layoutX="799.0" layoutY="49.0" mnemonicParsing="false" prefHeight="62.0" prefWidth="128.0" text="DEFENCE" />
-         </children>
-      </AnchorPane>
+      <Button fx:id="submitButton" layoutX="537.0" layoutY="422.0" mnemonicParsing="false" prefHeight="62.0" prefWidth="128.0" text="SUBMIT" />
       <Text layoutX="434.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ultimate PK Smash" wrappingWidth="333.0">
          <font>
             <Font size="36.0" />
          </font>
       </Text>
+      <TextArea fx:id="attack1Description" layoutX="283.0" layoutY="535.0" prefHeight="62.0" prefWidth="170.0" />
+      <Label fx:id="attack1Dmg" layoutX="464.0" layoutY="541.0" prefHeight="48.0" prefWidth="90.0" text="DMG" />
+      <Label fx:id="attack1Type" layoutX="572.0" layoutY="547.0" prefHeight="36.0" prefWidth="90.0" text="typ" />
+      <Button fx:id="attackButton1" layoutX="88.0" layoutY="537.0" mnemonicParsing="false" onMouseClicked="#handleAttackButton1" prefHeight="62.0" prefWidth="128.0" text="ATTACK" />
+      <Button fx:id="attackButton2" layoutX="88.0" layoutY="626.0" mnemonicParsing="false" onMouseClicked="#handleAttackButton2" prefHeight="62.0" prefWidth="128.0" text="ATTACK" />
+      <Button fx:id="attackButton3" layoutX="90.0" layoutY="715.0" mnemonicParsing="false" onMouseClicked="#handleAttackButton3" prefHeight="62.0" prefWidth="128.0" text="ATTACK" />
+      <Button fx:id="defenceButton2" layoutX="758.0" layoutY="686.0" mnemonicParsing="false" onMouseClicked="#handleButtonDefence2" prefHeight="62.0" prefWidth="128.0" text="DEFENCE" />
+      <Button fx:id="defenceButton1" layoutX="758.0" layoutY="566.0" mnemonicParsing="false" onMouseClicked="#handleButtonDefence1" prefHeight="62.0" prefWidth="128.0" text="DEFENCE" />
+      <Label fx:id="timerLabel" layoutX="523.0" layoutY="89.0" prefHeight="36.0" prefWidth="102.0" text="Timer" />
    </children>
 </AnchorPane>
