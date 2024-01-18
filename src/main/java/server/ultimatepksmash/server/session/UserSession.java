@@ -50,10 +50,6 @@ public class UserSession implements Callable<SessionEndStatus> {
                 socket.close();
                 return new SessionEndStatus(SessionEndReason.loggedOut);
             }
-            else if(req instanceof BattleStart2v2Req)
-            {
-                battle2v2Chosen((BattleStart2v2Req) req);
-            }
             else if(req instanceof Get1v1ResultsReq)
             {
                 ResultService resultService = new ResultService();
@@ -61,10 +57,9 @@ public class UserSession implements Callable<SessionEndStatus> {
             }
             else
             {
+                System.out.println("User went back to the lobby");
                 throw new  UnsupportedOperationException("Not implemented yet");
             }
-            System.out.println("User went back to the lobby");
-            //throw new  UnsupportedOperationException("Not implemented yet");
         }
     }
 
@@ -86,41 +81,6 @@ public class UserSession implements Callable<SessionEndStatus> {
             System.out.println("Server sent StartRoundResp for user: "+user.getUsername() );
         }
         sendBattleEndResult(gameSession, smasherService);
-    }
-
-    private void battle2v2Chosen(BattleStart2v2Req battleStart2v2Req) throws IOException, ClassNotFoundException, SQLException {
-        System.out.println("User wants"+ user.getUsername() +" to play 2v2 battle");
-        SmasherService smasherService = new SmasherService();
-        Smasher mySmasher = smasherService.getSmasher(battleStart2v2Req.getUsersSmasherId());
-        System.out.println("Try to join game session");
-        GameSession gameSession = GamesManager.joinGameSession2v2(user, mySmasher);
-        System.out.println("User " + user.getUsername() +" have joined game session");
-        output.writeObject(gameSession.getBattleStartResponse());
-        while(!gameSession.isUserPlaying(user) && gameSession.checkIfTheGameIsStillOn())
-        {
-            System.out.println("gameSession.spyRequests");
-            StartRoundResp resp = gameSession.spyRequests();
-            output.writeObject(resp);
-        }
-        while(gameSession.isUserPlaying(user) && gameSession.checkIfTheGameIsStillOn())
-        {
-            System.out.println(" (StartRoundReq) input.readObject()");
-            StartRoundReq req = null;
-            req =  (StartRoundReq) input.readObject();
-            System.out.println("Server received StartRoundReq from user: "+user.getUsername() );
-            StartRoundResp resp = gameSession.executeRequest(user, req);
-            output.writeObject(resp);
-            System.out.println("Server sent StartRoundResp for user: "+user.getUsername() );
-        }
-        while(!gameSession.isUserPlaying(user) && gameSession.checkIfTheGameIsStillOn())
-        {
-            System.out.println("gameSession.spyRequests");
-            StartRoundResp resp = gameSession.spyRequests();
-            output.writeObject(resp);
-        }
-        sendBattleEndResult(gameSession, smasherService);
-        ResultService resultService = new ResultService();
-        resultService.addResult1vs1(new Result1vs1( gameSession.players.get(gameSession.winners == 'A' ? 0 : 1).getId(), gameSession.players.get(gameSession.winners == 'A' ? 1 : 0).getId()));
     }
 
     private void sendBattleEndResult(GameSession gameSession, SmasherService smasherService) throws SQLException, IOException {

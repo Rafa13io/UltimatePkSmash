@@ -73,7 +73,7 @@ public class Results1vs1Controller {
             secondNameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getWinner()));
 
             TableColumn<Result1v1Read, String> thirdNameCol = new TableColumn<>("Loser");
-            secondNameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLoser()));
+            thirdNameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLoser()));
             table.getColumns().addAll(firstNameCol, secondNameCol, thirdNameCol);
             table.setItems(result1vs1s);
         } catch (IOException | ClassNotFoundException e) {
