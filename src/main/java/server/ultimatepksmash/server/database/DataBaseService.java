@@ -73,7 +73,7 @@ public class DataBaseService {
 //        printList(userService.getUsers());
 //        printList(smasherService.getSmashers());
 //        System.out.println(new Date());
-        resultService.addResult1vs1(new Result1vs1(1L, 3L));
+//        resultService.addResult1vs1(new Result1vs1(1L, 3L));
 //        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
 //        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
         

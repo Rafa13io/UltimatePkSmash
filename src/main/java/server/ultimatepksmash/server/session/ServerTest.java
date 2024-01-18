@@ -22,7 +22,6 @@ public class ServerTest {
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             System.out.println("Sending Init request");
-            System.out.println("Sending Init request");
             output.writeObject(new LogInReq("rafalo", "123"));
 
             LogInResp logInResp = (LogInResp) input.readObject();
