@@ -352,7 +352,7 @@ public class ArenaController {
                                 throw new RuntimeException(e);
                             }
 
-                            showGameOverDialog("Wygrywa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage  );
+                            showGameOverDialog(" TEAM A gracz pierwszy Wygrywa gracza " + player1 ,"Przegrywa gracz:" + player2 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName()  );
                         }
                     }
                 }
@@ -395,7 +395,7 @@ public class ArenaController {
                                 throw new RuntimeException(e);
                             }
 
-                            showGameOverDialog("Wygrywa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage  );
+                            showGameOverDialog("Wygrywa gracza " + player2 ,"Przegrywa gracz:" + player1 + "\n"  + userSmasher.getName() + " zostaje pokonany" + "\n Wygrałeś: " + battleWonMessage.getWonSmasher().getName()  );
                         }
                     }
                 }
