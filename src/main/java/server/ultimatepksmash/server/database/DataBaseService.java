@@ -1,6 +1,7 @@
 package server.ultimatepksmash.server.database;
 
 import lombok.AllArgsConstructor;
+import server.ultimatepksmash.server.database.results.Result1vs1;
 import server.ultimatepksmash.server.database.results.Result2vs2;
 import server.ultimatepksmash.server.database.results.ResultService;
 import server.ultimatepksmash.server.database.smasher.SmasherService;
@@ -72,12 +73,15 @@ public class DataBaseService {
 //        printList(userService.getUsers());
 //        printList(smasherService.getSmashers());
 //        System.out.println(new Date());
-//        resultService.addResult1vs1(new Result1vs1(1L, 2L));
-        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
-        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
+//        resultService.addResult1vs1(new Result1vs1(1L, 3L));
+//        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
+//        resultService.addResult2vs2(new Result2vs2(1L,2L,3L,4L));
         
         printList(resultService.getResults1vs1());
         printList(resultService.getResults2vs2());
+        
+        printList(resultService.getUserResults1vs1(2L));
+        printList(resultService.getUserResults2vs2(2L));
 
 //        printList(attackService.getSmasherAttacks(1L));
 //        printList(attackService.getSmasherAttacks(2L));

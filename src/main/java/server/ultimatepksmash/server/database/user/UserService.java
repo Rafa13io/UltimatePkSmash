@@ -86,8 +86,15 @@ public class UserService {
         String sql = "insert into p_smasher_user(user_id, smasher_id) values (?,?);";
         PreparedStatement addSmasherToUser = connection.prepareStatement(sql);
         addSmasherToUser.setLong(1, userId);
-        addSmasherToUser.setLong(1, smasherId);
-        addSmasherToUser.executeUpdate();
+        addSmasherToUser.setLong(2, smasherId);
+        try {
+            addSmasherToUser.executeUpdate();
+        }
+catch (Exception e)
+{
+int a;
+System.out.println("");
+}
         addSmasherToUser.close();
     }
     
