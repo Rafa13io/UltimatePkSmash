@@ -20,13 +20,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class MenuController {
-    Socket socket;
-    ObjectOutputStream outputStream;
-    ObjectInputStream inputStream;
+    private Socket socket;
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
     @FXML
     private ComboBox<Smasher> smashersDropBox;
-    Parent root;
-    User user;
+    private Parent root;
+    private User user;
     public MenuController(Socket socket, ObjectOutputStream outputStream, ObjectInputStream inputStream, User user)
     {
         this.socket = socket;
