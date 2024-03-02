@@ -4,7 +4,15 @@ This is a project for Java college course, which was implemented by a three-pers
 [@Rafa13io](https://github.com/Rafa13io), [@JakubDralus](https://github.com/JakubDralus) and [@Veczar](https://github.com/Veczar).
 It is actical 1vs1 fighting game inspired by Pokemon games and was done in basically 3 days to challenge ourselves.
 
+## Technologies Used
+- Java 19
+- [JavaFX](https://github.com/openjdk/jfx)
+- [JDBC PostgreSQL Driver](https://jdbc.postgresql.org/)
+- PostgreSQL
+
 ## Details
+
+### Server Connection
 Its based a client-server communication concept using Java `java.net.ServerSocket`.
 
 Server side:
@@ -44,7 +52,7 @@ and thus he has its own individual thread running on the server using `java.util
 ```
 When two players are in queue for a battle, the server matches them and they can start playing right away.
 
-### Database
+### Database Connection
 We are using PostgreSQL database and connecting via JDBC. <br>
 Here we are storing information about each registered player, smashers, their abilities and also battle history.
 ```java
@@ -75,10 +83,8 @@ Each player with one of "Smashers" form their collection can fight in a tour bas
   The HP update order is determined by a hidden star called 'ECTS' points: if your smasher have more of them, he attacks first (his damage dealt is calculated first).
 - Battle ends when one of the "Smasher" gets below 0 HP.
 - Winner gets new random "Smasher" to their collection.
+
+**Note:** The UI creation was rushed and was not a priority in this project.
  
 ![image](https://github.com/Rafa13io/UltimatePkSmash/assets/129612952/9647c342-5f08-44aa-9dcb-befbe96b5291)
 
-
-## Dependencies
-- [JavaFX](https://github.com/openjdk/jfx)
-- [JDBC PostgreSQL Driver](https://jdbc.postgresql.org/)
