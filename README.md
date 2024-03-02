@@ -1,5 +1,8 @@
 # Ultimate PK Smash
-Tactical fighting game inspired by Pokemon games. 
+
+This is a project for Java college course, which was implemented by a three-person team consisting of 
+[@Rafa13io](https://github.com/Rafa13io), [@JakubDralus](https://github.com/JakubDralus) and [@Veczar](https://github.com/Veczar).
+It is actical 1vs1 fighting game inspired by Pokemon games and was done in basically 3 days to challenge ourselves.
 
 ## Details
 Its based a client-server communication concept using Java `java.net.ServerSocket`.
